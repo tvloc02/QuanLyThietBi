@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Dashboard - BaoTriStack</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+<div class="main-container">
+    <!-- Header Section -->
+    <div class="header">
+        <div class="header-title">
+            <i class="fas fa-home"></i>
+            TRANG CHỦ NGƯỜI DÙNG
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Tìm kiếm..." class="form-control">
+        </div>
+        <div class="user-info">
+            <div class="user-avatar" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="dropdown">
+                <div class="account-dropdown dropdown-menu dropdown-menu-end">
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-user me-2"></i>
+                        <span th:text="${hoVaTen ?: 'User'}">User</span>
+                    </div>
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        <span th:text="${roleTitle ?: 'Người dùng'}">Người dùng</span>
+                    </div>
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-envelope me-2"></i>
+                        <span th:text="${email ?: 'user@truonghoc.edu.vn'}">user@truonghoc.edu.vn</span>
+                    </div>
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-clock me-2"></i>
+                        <span>Đăng nhập gần nhất: <span th:text="${lastLogin ?: '30/07/2025 14:00'}">30/07/2025 14:00</span></span>
+                    </div>
+                    <hr class="my-2">
+                    <a href="/tai-khoan/chinh-sua" class="account-dropdown-item">
+                        <i class="fas fa-user-edit me-2"></i> Chỉnh sửa hồ sơ
+                    </a>
+                    <a href="/logout" class="account-dropdown-item text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
+                    </a>
+                </div>
+            </div>
+            <div>
+                <div style="font-weight: 600; margin-bottom: 4px;" th:text="${hoVaTen ?: 'User'}">User</div>
+                <div style="opacity: 0.8; font-size: 0.9rem;" th:text="${roleTitle ?: 'Người dùng'}">Người dùng</div>
+                <div style="opacity: 0.7; font-size: 0.8rem;">
+                    <i class="fas fa-clock me-1"></i>
+                    <span th:text="${currentTime}">00:56 30/07/2025</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Horizontal Navigation Menu -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">TRANG CHỦ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tai-khoan/thong-tin">Thông tin cá nhân</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Trợ giúp
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/tro-giup/huong-dan-su-dung">Hướng dẫn sử dụng</a></li>
+                            <li><a class="dropdown-item" href="/tro-giup/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+                            <li><a class="dropdown-item" href="/tro-giup/lien-he-ho-tro">Liên hệ hỗ trợ</a></li>
+                            <li><a class="dropdown-item" href="/tro-giup/ve-he-thong">Về hệ thống</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="welcome-title">
+            <i class="fas fa-wave-square"></i>
+            Chào mừng bạn đến với hệ thống!
+        </div>
+        <div class="welcome-subtitle">
+            <i class="fas fa-info-circle"></i>
+            Hệ thống quản lý thiết bị BaoTriStack.
+            <span class="fw-bold">Vui lòng liên hệ quản trị viên</span> để được cấp quyền phù hợp.
+        </div>
+        <div class="status-badge">
+            <span class="status-indicator status-online"></span>
+            <span>Hệ thống hoạt động bình thường</span>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="action-buttons">
+        <div class="action-card">
+            <h5 class="mb-4">
+                <i class="fas fa-tasks text-primary me-2"></i>
+                Thao tác có thể thực hiện
+            </h5>
+            <div class="row g-3">
+                <div class="col-md-6 col-sm-12">
+                    <a href="/tai-khoan/chinh-sua" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-user-edit"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Chỉnh sửa thông tin cá nhân</div>
+                            <small class="text-muted">Cập nhật thông tin tài khoản</small>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-sm-12">
+                    <a href="/tai-khoan/doi-mat-khau" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Đổi mật khẩu</div>
+                            <small class="text-muted">Thay đổi mật khẩu đăng nhập</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Information Section -->
+    <div class="chart-section">
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="chart-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="chart-title mb-0">Thông tin hệ thống</h6>
+                    </div>
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-info-circle me-2"></i>Chào mừng bạn!</h5>
+                        <p>Bạn đã đăng nhập thành công vào hệ thống quản lý thiết bị BaoTriStack.</p>
+                        <p>Hiện tại tài khoản của bạn chưa được cấp quyền truy cập các tính năng chính của hệ thống.</p>
+                        <p><strong>Vui lòng liên hệ quản trị viên</strong> để được cấp quyền phù hợp với công việc của bạn.</p>
+                        <hr>
+                        <p class="mb-0">
+                            <strong>Liên hệ:</strong> Email: admin@truonghoc.edu.vn | Điện thoại: 0901234567
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/dashboard.js"></script>
+</body>
+</html>

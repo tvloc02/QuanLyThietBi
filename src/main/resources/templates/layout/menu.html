@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- Navigation Menu -->
+<nav th:fragment="navigation" class="nav-menu">
+    <style>
+        /* Navigation Menu Styles */
+        .nav-menu {
+            background: var(--bg-nav);
+            box-shadow: var(--shadow-md);
+            padding: 0;
+            position: sticky;
+            top: 57px;
+            z-index: 1020;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            overflow-x: auto;
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        .nav-list {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 0;
+            min-width: max-content;
+        }
+
+        .nav-item {
+            position: relative;
+            z-index: 1050;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            color: var(--text-nav);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            color: var(--text-white);
+            background: var(--bg-nav-hover);
+            border-bottom-color: var(--ocean-blue);
+        }
+
+        .nav-link.active {
+            color: var(--text-white);
+            background: var(--bg-nav-hover);
+            border-bottom-color: var(--ocean-blue);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link i {
+            font-size: 1.1rem;
+        }
+
+        .badge-notification {
+            background: linear-gradient(135deg, var(--red), #DC2626);
+            color: white;
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: 0.5rem;
+            font-weight: 600;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            padding: 0.75rem 0;
+            margin-top: 0.5rem;
+            min-width: 240px;
+            animation: dropdownSlide 0.3s ease-out;
+            z-index: 1060;
+            display: none;
+        }
+
+        .nav-menu,
+        .nav-container {
+            overflow: visible;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-item {
+            padding: 0.875rem 1.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.9rem;
+            margin: 0.125rem 0;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            transform: translateX(5px);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .dropdown-item:hover i {
+            color: var(--primary-blue);
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 1rem;
+            border-color: var(--border-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-link {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+
+    <div class="nav-container">
+        <ul class="nav-list">
+            <!-- Dashboard -->
+            <li class="nav-item">
+                <a href="/dashboard" class="nav-link active">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <!-- Thiết bị (All roles) -->
+            <li class="nav-item">
+                <a href="/api/thiet-bi" class="nav-link">
+                    <i class="bi bi-cpu"></i>
+                    <span>Thiết bị</span>
+                </a>
+            </li>
+
+            <!-- Vật tư (All roles) -->
+            <li class="nav-item">
+                <a href="/api/vat-tu" class="nav-link">
+                    <i class="bi bi-box-seam"></i>
+                    <span>Vật tư</span>
+                </a>
+            </li>
+
+            <!-- Bảo trì -->
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-tools"></i>
+                    <span>Bảo trì</span>
+                    <span class="badge-notification">8</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/api/yeu-cau-bao-tri"><i class="bi bi-clipboard-check"></i>Yêu cầu bảo trì</a></li>
+                    <li class="role-admin role-manager"><a class="dropdown-item" href="/bao-tri/duyet-yeu-cau"><i class="bi bi-check2-square"></i>Duyet yêu cầu</a></li>
+                    <li class="role-admin role-manager"><a class="dropdown-item" href="/api/ke-hoach-bao-tri"><i class="bi bi-calendar3"></i>Kế hoạch bảo trì</a></li>
+                    <li class="role-technician role-admin"><a class="dropdown-item" href="/api/thuc-hien-bao-tri/cong-viec"><i class="bi bi-wrench"></i>Thực hiện bảo trì</a></li>
+                    <li><a class="dropdown-item" href="/api/kiem-tra-dinh-ky"><i class="bi bi-search"></i>Kiểm tra định kỳ</a></li>
+                    <li><a class="dropdown-item" href="/bao-tri/lich-su"><i class="bi bi-clock-history"></i>Lịch sử bảo trì</a></li>
+                    <li><a class="dropdown-item" href="/api/canh-bao-loi"><i class="bi bi-exclamation-triangle"></i>Cảnh báo lỗi</a></li>
+                </ul>
+            </li>
+
+            <!-- Đội bảo trì (Admin + Manager) -->
+            <li class="nav-item dropdown role-admin role-manager">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-people-fill"></i>
+                    <span>Đội bảo trì</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/api/doi-bao-tri"><i class="bi bi-list"></i>Danh sách đội</a></li>
+                    <li><a class="dropdown-item" href="/doi-bao-tri/them"><i class="bi bi-plus-circle"></i>Thêm đội mới</a></li>
+                    <li><a class="dropdown-item" href="/doi-bao-tri/thanh-vien"><i class="bi bi-person-plus"></i>Quản lý thành viên</a></li>
+                    <li><a class="dropdown-item" href="/doi-bao-tri/phan-cong"><i class="bi bi-person-gear"></i>Phân công công việc</a></li>
+                    <li><a class="dropdown-item" href="/doi-bao-tri/hieu-suat"><i class="bi bi-graph-up"></i>Hiệu suất đội</a></li>
+                </ul>
+            </li>
+
+            <!-- Báo cáo & Thống kê (Admin + Manager) -->
+            <li class="nav-item dropdown role-admin role-manager">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    <span>Báo cáo</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/api/bao-cao/tong-hop"><i class="bi bi-graph-up"></i>Báo cáo tổng hợp</a></li>
+                    <li><a class="dropdown-item" href="/api/bao-cao/oee"><i class="bi bi-speedometer"></i>Báo cáo OEE</a></li>
+                    <li><a class="dropdown-item" href="/api/bao-cao/mtbf"><i class="bi bi-clipboard-data"></i>Báo cáo MTBF</a></li>
+                    <li><a class="dropdown-item" href="/api/thong-ke/bao-tri"><i class="bi bi-pie-chart"></i>Thống kê bảo trì</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/api/thong-ke/thiet-bi"><i class="bi bi-cpu"></i>Báo cáo thiết bị</a></li>
+                    <li><a class="dropdown-item" href="/bao-cao/vat-tu"><i class="bi bi-box-seam"></i>Báo cáo vật tư</a></li>
+                    <li><a class="dropdown-item" href="/api/thong-ke/hieu-suat"><i class="bi bi-bar-chart"></i>Thống kê hiệu suất</a></li>
+                </ul>
+            </li>
+
+            <!-- Debug & Test (Admin only) -->
+            <li class="nav-item dropdown role-admin">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-bug"></i>
+                    <span>Debug</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/csrf-debug/token"><i class="bi bi-shield-lock"></i>CSRF Token</a></li>
+                    <li><a class="dropdown-item" href="/csrf-debug/test-form"><i class="bi bi-file-earmark-code"></i>Test Form</a></li>
+                    <li><a class="dropdown-item" href="/test-dashboard"><i class="bi bi-speedometer2"></i>Test Dashboard</a></li>
+                    <li><a class="dropdown-item" href="/api/debug/test-password"><i class="bi bi-person-check"></i>Check Auth</a></li>
+                    <li><a class="dropdown-item" href="/force-login"><i class="bi bi-key"></i>Force Login</a></li>
+                </ul>
+            </li>
+
+            <!-- Trợ giúp -->
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-question-circle"></i>
+                    <span>Trợ giúp</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/huong-dan"><i class="bi bi-book"></i>Hướng dẫn sử dụng</a></li>
+                    <li><a class="dropdown-item" href="/video-huong-dan"><i class="bi bi-play-circle"></i>Video hướng dẫn</a></li>
+                    <li><a class="dropdown-item" href="/faq"><i class="bi bi-question-square"></i>Câu hỏi thường gặp</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/lien-he"><i class="bi bi-envelope"></i>Liên hệ hỗ trợ</a></li>
+                    <li><a class="dropdown-item" href="/about"><i class="bi bi-info-circle"></i>Về hệ thống</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enhanced dropdown behavior
+            const dropdownElements = document.querySelectorAll('.dropdown-toggle');
+            dropdownElements.forEach(element => {
+                element.addEventListener('show.bs.dropdown', function () {
+                    this.classList.add('show');
+                });
+
+                element.addEventListener('hide.bs.dropdown', function () {
+                    this.classList.remove('show');
+                });
+            });
+
+            // Active menu highlighting
+            const currentPath = window.location.pathname;
+            const menuLinks = document.querySelectorAll('.nav-link[href]');
+
+            menuLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    menuLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</nav>
+
+</html>

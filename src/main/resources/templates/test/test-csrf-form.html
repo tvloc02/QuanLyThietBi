@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CSRF Test Form</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .btn { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; }
+        .info { background: #f8f9fa; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+<h1>🔒 CSRF Token Test</h1>
+
+<div class="info">
+    <h3>CSRF Token Information:</h3>
+    <p><strong>Parameter Name:</strong> <span th:text="${csrfParameterName}">_csrf</span></p>
+    <p><strong>Token:</strong> <code th:text="${csrfToken}">token-value</code></p>
+</div>
+
+<form action="/csrf-debug/test-submit" method="post">
+    <!-- CSRF Token -->
+    <input type="hidden" th:name="${csrfParameterName}" th:value="${csrfToken}" />
+
+    <div class="form-group">
+        <label>Test Input:</label>
+        <input type="text" name="testInput" value="CSRF Test" />
+    </div>
+
+    <button type="submit" class="btn">Submit Test</button>
+</form>
+
+<hr>
+
+<h3>🧪 Debug Links:</h3>
+<ul>
+    <li><a href="/csrf-debug/token">Get CSRF Token (JSON)</a></li>
+    <li><a href="/login">Back to Login</a></li>
+    <li><a href="/debug/check-auth">Check Authentication</a></li>
+</ul>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        console.log('🔒 Submitting form with CSRF token');
+    });
+</script>
+</body>
+</html>

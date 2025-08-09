@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo cáo OEE - BaoTriStack</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/bao-cao.css">
+</head>
+<body>
+<div class="main-container">
+    <!-- Header Section -->
+    <div class="header">
+        <div class="header-title">
+            <i class="fas fa-tachometer-alt"></i>
+            BÁO CÁO OEE (OVERALL EQUIPMENT EFFECTIVENESS)
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Tìm kiếm thiết bị..." class="form-control">
+        </div>
+        <div class="user-info">
+            <div class="user-avatar" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="dropdown">
+                <div class="account-dropdown dropdown-menu dropdown-menu-end">
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-user me-2"></i>
+                        <span th:text="${hoVaTen ?: 'Admin User'}">Admin User</span>
+                    </div>
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        <span th:text="${roleTitle ?: 'Quản trị viên'}">Quản trị viên</span>
+                    </div>
+                    <hr class="my-2">
+                    <a href="/logout" class="account-dropdown-item text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
+                    </a>
+                </div>
+            </div>
+            <div>
+                <div style="font-weight: 600; margin-bottom: 4px;" th:text="${hoVaTen ?: 'Admin User'}">Admin User</div>
+                <div style="opacity: 0.8; font-size: 0.9rem;" th:text="${roleTitle ?: 'Quản trị viên'}">Quản trị viên</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item dropdown active">
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown">
+                            Báo cáo
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/bao-cao/tong-hop">Báo cáo tổng hợp</a></li>
+                            <li><a class="dropdown-item active" href="/bao-cao/oee">Báo cáo OEE</a></li>
+                            <li><a class="dropdown-item" href="/bao-cao/mtbf">Báo cáo MTBF</a></li>
+                            <li><a class="dropdown-item" href="/bao-cao/mttr">Báo cáo MTTR</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- OEE Report Header -->
+    <div class="report-header">
+        <div class="report-title">
+            <i class="fas fa-gauge-high"></i>
+            Báo cáo hiệu quả tổng thể thiết bị (OEE)
+        </div>
+        <div class="report-controls">
+            <div class="equipment-selector">
+                <i class="fas fa-cog"></i>
+                <select class="form-select" id="equipmentSelect" onchange="updateOEEReport()">
+                    <option value="all">Tất cả thiết bị</option>
+                    <option value="1" th:each="equipment : ${equipmentList}" th:value="${equipment.idThietBi}" th:text="${equipment.tenThietBi}">Máy nén khí số 1</option>
+                </select>
+            </div>
+            <div class="date-range-picker">
+                <i class="fas fa-calendar-alt"></i>
+                <input type="date" id="fromDate" class="form-control" th:value="${fromDate}">
+                <span>đến</span>
+                <input type="date" id="toDate" class="form-control" th:value="${toDate}">
+                <button class="btn btn-primary" onclick="updateOEEReport()">
+                    <i class="fas fa-sync-alt"></i> Cập nhật
+                </button>
+            </div>
+            <div class="report-actions">
+                <button class="btn btn-success" onclick="exportOEEReport('excel')">
+                    <i class="fas fa-file-excel"></i> Excel
+                </button>
+                <button class="btn btn-danger" onclick="exportOEEReport('pdf')">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OEE Overview Cards -->
+    <div class="report-summary">
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="summary-card primary">
+                    <div class="summary-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="summary-content">
+                        <div class="summary-number" id="oeeOverall" th:text="${oeeOverall ?: '85.2'} + '%'">85.2%</div>
+                        <div class="summary-label">OEE Tổng thể</div>
+                        <div class="summary-progress">
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-primary" role="progressbar" th:style="'width: ' + ${oeeOverall ?: 85.2} + '%'" style="width: 85.2%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="summary-card success">
+                    <div class="summary-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="summary-content">
+                        <div class="summary-number" id="availabilityRate" th:text="${availabilityRate ?: '92.1'} + '%'">92.1%</div>
+                        <div class="summary-label">Tính khả dụng (Availability)</div>
+                        <div class="summary-progress">
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-success" role="progressbar" th:style="'width: ' + ${availabilityRate ?: 92.1} + '%'" style="width: 92.1%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="summary-card warning">
+                    <div class="summary-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div class="summary-content">
+                        <div class="summary-number" id="performanceRate" th:text="${performanceRate ?: '88.7'} + '%'">88.7%</div>
+                        <div class="summary-label">Hiệu suất (Performance)</div>
+                        <div class="summary-progress">
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-warning" role="progressbar" th:style="'width: ' + ${performanceRate ?: 88.7} + '%'" style="width: 88.7%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="summary-card info">
+                    <div class="summary-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="summary-content">
+                        <div class="summary-number" id="qualityRate" th:text="${qualityRate ?: '96.5'} + '%'">96.5%</div>
+                        <div class="summary-label">Chất lượng (Quality)</div>
+                        <div class="summary-progress">
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-info" role="progressbar" th:style="'width: ' + ${qualityRate ?: 96.5} + '%'" style="width: 96.5%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OEE Analysis Charts -->
+    <div class="report-charts">
+        <div class="row g-4">
+            <!-- OEE Trend Chart -->
+            <div class="col-lg-8">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Xu hướng OEE theo thời gian</h5>
+                        <div class="chart-controls">
+                            <select class="form-select form-select-sm" id="oeeTrendPeriod" onchange="updateOEETrendChart()">
+                                <option value="7">7 ngày qua</option>
+                                <option value="30" selected>30 ngày qua</option>
+                                <option value="90">3 tháng qua</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="oeeTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OEE Components Breakdown -->
+            <div class="col-lg-4">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Phân tích thành phần OEE</h5>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="oeeComponentsChart"></canvas>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: var(--success-green);"></span>
+                            <span>Availability: <strong id="legendAvailability">92.1%</strong></span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: var(--warning-orange);"></span>
+                            <span>Performance: <strong id="legendPerformance">88.7%</strong></span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: var(--primary-blue);"></span>
+                            <span>Quality: <strong id="legendQuality">96.5%</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Equipment OEE Comparison -->
+            <div class="col-lg-12">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5 class="chart-title">So sánh OEE theo thiết bị</h5>
+                        <div class="chart-controls">
+                            <select class="form-select form-select-sm" id="equipmentCategory" onchange="updateEquipmentOEEChart()">
+                                <option value="all">Tất cả danh mục</option>
+                                <option value="THIET_BI_IT">Thiết bị IT</option>
+                                <option value="PHONG_HOC">Phòng học</option>
+                                <option value="PHONG_LAB">Phòng lab</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="equipmentOEEChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OEE Performance Analysis -->
+    <div class="performance-metrics">
+        <div class="metrics-card">
+            <div class="metrics-header">
+                <h5 class="metrics-title">Phân tích hiệu suất chi tiết</h5>
+                <div class="metrics-period">
+                    <span>Kỳ báo cáo: <span th:text="${reportPeriod}">01/07/2025 - 30/07/2025</span></span>
+                </div>
+            </div>
+            <div class="metrics-body">
+                <!-- Availability Analysis -->
+                <div class="analysis-section">
+                    <h6 class="analysis-title">
+                        <i class="fas fa-clock text-success me-2"></i>
+                        Phân tích Tính khả dụng (Availability)
+                    </h6>
+                    <div class="row g-4">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="metric-item">
+                                <div class="metric-icon success">
+                                    <i class="fas fa-play"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-value" th:text="${plannedTime ?: '720'} + 'h'">720h</div>
+                                    <div class="metric-label">Thời gian lên kế</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="metric-item">
+                                <div class="metric-icon success">
+                                    <i class="fas fa-running"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-value" th:text="${operatingTime ?: '663'} + 'h'">663h</div>
+                                    <div class="metric-label">Thời gian hoạt động</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="metric-item">
+                                <div class="metric-icon warning">
+                                    <i class="fas fa-pause"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-value" th:text="${downtimeTotal ?: '57'} + 'h'">57h</div>
+                                    <div class="metric-label">Thời gian dừng máy</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="metric-item">
+                                <div class="metric-icon danger">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-value" th:text="${maintenanceTime ?: '32'} + 'h'">32h</div>
+                                    <div class="metric-label">Thời gian bảo trì</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Analysis -->
+                <div class="analysis-section">
+                    <h6 class="analysis-title">
+                        <i class="fas fa-tachometer-alt text-warning me-2"></i>
+                        Phân tích Hiệu suất (Performance)
+                    </h6>
+                    <div class="row g-4">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="metric-item">
+                                <div class="metric-icon warning">
+                                    <i class="fas fa-target"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-value" th:text="${targetOutput ?: '1000'}">1000</div>
+                                    <div class="metric-label">Sản lượng mục tiêu</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="metric-item">
+                                <div class="metric-icon warning">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-value" th:text="${actualOutput ?: '887'}">887</div>
+                                    <div class="metric-label">Sản lượng thực tế</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="metric-item">
+                                <div class="metric-icon info">
+                                    <i class="fas fa-stopwatch"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-value" th:text="${idealCycleTime ?: '0.45'} + 'min'">0.45min</div>
+                                    <div class="metric-label">Thời gian chu kỳ lý tưởng</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="metric-item">
+                                <div class="metric-icon primary">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-value" th:text="${actualCycleTime ?: '0.51'} + 'min'">0.51min</div>
+                                    <div class="metric-label">Thời gian chu kỳ thực tế</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quality Analysis -->
+                <div class="analysis-section">
+                    <h6 class="analysis-title">
+                        <i class="fas fa-star text-info me-2"></i>
+                        Phân tích Chất lượng (Quality)
+                    </h6>
+                    <div class="row g-4">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="metric-item">
+                                <div class="metric-icon info">
+                                    <i class="fas fa-boxes"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-value" th:text="${totalProduced ?: '887'}">887</div>
+                                    <div class="metric-label">Tổng sản phẩm</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="metric-item">
+                                <div class="metric-icon success">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-value" th:text="${qualityProducts ?: '856'}">856</div>
+                                    <div class="metric-label">Sản phẩm đạt chất lượng</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="metric-item">
+                                <div class="metric-icon danger">
+                                    <i class="fas fa-times-circle"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-value" th:text="${defectProducts ?: '31'}">31</div>
+                                    <div class="metric-label">Sản phẩm lỗi</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="metric-item">
+                                <div class="metric-icon secondary">
+                                    <i class="fas fa-percentage"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-value" th:text="${defectRate ?: '3.5'} + '%'">3.5%</div>
+                                    <div class="metric-label">Tỷ lệ lỗi</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OEE Loss Analysis -->
+    <div class="report-tables">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h5 class="table-title">Phân tích tổn thất OEE</h5>
+                        <div class="table-controls">
+                            <button class="btn btn-sm btn-outline-primary" onclick="refreshLossAnalysis()">
+                                <i class="fas fa-sync-alt"></i> Làm mới
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Loại tổn thất</th>
+                                    <th>Thời gian (giờ)</th>
+                                    <th>% Tổng thời gian</th>
+                                    <th>Tác động OEE</th>
+                                    <th>Nguyên nhân chính</th>
+                                </tr>
+                                </thead>
+                                <tbody id="lossAnalysisTable">
+                                <!-- Data will be loaded by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Phân bố tổn thất</h5>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="lossDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OEE Recommendations -->
+    <div class="recommendations-section">
+        <div class="recommendations-card">
+            <div class="recommendations-header">
+                <h5 class="recommendations-title">
+                    <i class="fas fa-lightbulb text-warning me-2"></i>
+                    Khuyến nghị cải thiện OEE
+                </h5>
+            </div>
+            <div class="recommendations-body">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="recommendation-item priority-high">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <h6>Ưu tiên cao</h6>
+                                <p>Giảm thời gian setup từ 45 phút xuống 30 phút có thể cải thiện Availability lên 94.5%</p>
+                                <div class="recommendation-impact">
+                                    <span class="impact-label">Tác động OEE:</span>
+                                    <span class="impact-value">+2.3%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="recommendation-item priority-medium">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <h6>Ưu tiên trung bình</h6>
+                                <p>Tối ưu hóa tốc độ vận hành có thể cải thiện Performance lên 92%</p>
+                                <div class="recommendation-impact">
+                                    <span class="impact-label">Tác động OEE:</span>
+                                    <span class="impact-value">+2.8%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="recommendation-item priority-low">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <h6>Ưu tiên thấp</h6>
+                                <p>Cải thiện quy trình kiểm soát chất lượng có thể đạt Quality 98%</p>
+                                <div class="recommendation-impact">
+                                    <span class="impact-label">Tác động OEE:</span>
+                                    <span class="impact-value">+1.4%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="report-actions-section">
+        <div class="actions-card">
+            <h5 class="actions-title">
+                <i class="fas fa-tools text-primary me-2"></i>
+                Hành động nhanh
+            </h5>
+            <div class="row g-3">
+                <div class="col-md-3 col-sm-6">
+                    <a href="/bao-cao/oee/chi-tiet" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Chi tiết OEE</div>
+                            <small class="text-muted">Xem phân tích sâu</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <a href="/bao-tri/ke-hoach-cai-thien" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Kế hoạch cải thiện</div>
+                            <small class="text-muted">Tạo kế hoạch hành động</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <a href="/bao-cao/so-sanh-oee" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">So sánh OEE</div>
+                            <small class="text-muted">So sánh với chuẩn ngành</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <a href="/bao-cao/bao-cao-dinh-ky" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Báo cáo định kỳ</div>
+                            <small class="text-muted">Thiết lập báo cáo tự động</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification Container -->
+<div id="notificationContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/dashboard.js"></script>
+<script src="/js/bao-cao.js"></script>
+<script src="/js/bao-cao-oee.js"></script>
+</body>
+</html>

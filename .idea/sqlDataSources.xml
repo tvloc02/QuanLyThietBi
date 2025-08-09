@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="8fe9238a-fd0f-43ce-a4bb-03145aa4b6de" name="baotri_dev Mapping">
+      <data-sources db="77b66b31-e0ae-49c9-8cbc-6922a8475d82" ddl="070a30f8-5097-407e-9b6a-48c76daa8bd0" />
+    </mapping>
+  </component>
+  <component name="SqlDataSourceStorage">
+    <option name="dataSources">
+      <list>
+        <State>
+          <option name="id" value="070a30f8-5097-407e-9b6a-48c76daa8bd0" />
+          <option name="name" value="baotri_dev (DDL)" />
+          <option name="dbmsName" value="H2" />
+          <option name="urls">
+            <array />
+          </option>
+          <option name="outLayout" value="File per object by schema.groovy" />
+        </State>
+        <State>
+          <option name="id" value="6a4bd603-c9f3-47c2-aff2-fce82d678743" />
+          <option name="name" value="DDL data source" />
+          <option name="dbmsName" value="UNKNOWN" />
+          <option name="urls">
+            <array>
+              <option value="file://$PROJECT_DIR$/src/main/resources/db/migration/V0__Create_basic_tables.sql" />
+              <option value="file://$PROJECT_DIR$/src/main/resources/db/migration/V1__Tao_bang_nguoi_dung.sql" />
+            </array>
+          </option>
+          <option name="outLayout" value="File per object by schema.groovy" />
+        </State>
+      </list>
+    </option>
+  </component>
+</project>

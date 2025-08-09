@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo cáo MTTR - BaoTriStack</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/bao-cao.css">
+</head>
+<body>
+<div class="main-container">
+    <!-- Header Section -->
+    <div class="header">
+        <div class="header-title">
+            <i class="fas fa-wrench"></i>
+            BÁO CÁO MTTR (MEAN TIME TO REPAIR)
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Tìm kiếm thiết bị..." class="form-control">
+        </div>
+        <div class="user-info">
+            <div class="user-avatar" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="dropdown">
+                <div class="account-dropdown dropdown-menu dropdown-menu-end">
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-user me-2"></i>
+                        <span th:text="${hoVaTen ?: 'Admin User'}">Admin User</span>
+                    </div>
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        <span th:text="${roleTitle ?: 'Quản trị viên'}">Quản trị viên</span>
+                    </div>
+                    <hr class="my-2">
+                    <a href="/logout" class="account-dropdown-item text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
+                    </a>
+                </div>
+            </div>
+            <div>
+                <div style="font-weight: 600; margin-bottom: 4px;" th:text="${hoVaTen ?: 'Admin User'}">Admin User</div>
+                <div style="opacity: 0.8; font-size: 0.9rem;" th:text="${roleTitle ?: 'Quản trị viên'}">Quản trị viên</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item dropdown active">
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown">
+                            Báo cáo
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/bao-cao/tong-hop">Báo cáo tổng hợp</a></li>
+                            <li><a class="dropdown-item" href="/bao-cao/oee">Báo cáo OEE</a></li>
+                            <li><a class="dropdown-item" href="/bao-cao/mtbf">Báo cáo MTBF</a></li>
+                            <li><a class="dropdown-item active" href="/bao-cao/mttr">Báo cáo MTTR</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MTTR Report Header -->
+    <div class="report-header">
+        <div class="report-title">
+            <i class="fas fa-stopwatch"></i>
+            Báo cáo thời gian sửa chữa trung bình (MTTR)
+        </div>
+        <div class="report-controls">
+            <div class="equipment-selector">
+                <i class="fas fa-cog"></i>
+                <select class="form-select" id="equipmentSelect" onchange="updateMTTRReport()">
+                    <option value="all">Tất cả thiết bị</option>
+                    <option value="1" th:each="equipment : ${equipmentList}" th:value="${equipment.idThietBi}" th:text="${equipment.tenThietBi}">Máy nén khí số 1</option>
+                </select>
+            </div>
+            <div class="date-range-picker">
+                <i class="fas fa-calendar-alt"></i>
+                <input type="date" id="fromDate" class="form-control" th:value="${fromDate}">
+                <span>đến</span>
+                <input type="date" id="toDate" class="form-control" th:value="${toDate}">
+                <button class="btn btn-primary" onclick="updateMTTRReport()">
+                    <i class="fas fa-sync-alt"></i> Cập nhật
+                </button>
+            </div>
+            <div class="report-actions">
+                <button class="btn btn-success" onclick="exportMTTRReport('excel')">
+                    <i class="fas fa-file-excel"></i> Excel
+                </button>
+                <button class="btn btn-danger" onclick="exportMTTRReport('pdf')">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MTTR Overview Cards -->
+    <div class="report-summary">
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="summary-card warning">
+                    <div class="summary-icon">
+                        <i class="fas fa-stopwatch"></i>
+                    </div>
+                    <div class="summary-content">
+                        <div class="summary-number" id="mttrAverage" th:text="${mttrAverage ?: '4.2'} + 'h'">4.2h</div>
+                        <div class="summary-label">MTTR Trung bình</div>
+                        <div class="summary-change positive">
+                            <i class="fas fa-arrow-down"></i>
+                            <span>-0.3h so với tháng trước</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="summary-card success">
+                    <div class="summary-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div class="summary-content">
+                        <div class="summary-number" id="repairEfficiency" th:text="${repairEfficiency ?: '88.5'} + '%'">88.5%</div>
+                        <div class="summary-label">Hiệu quả sửa chữa</div>
+                        <div class="summary-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+3.2% cải thiện</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="summary-card primary">
+                    <div class="summary-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="summary-content">
+                        <div class="summary-number" id="totalRepairs" th:text="${totalRepairs ?: '45'}">45</div>
+                        <div class="summary-label">Tổng số lần sửa chữa</div>
+                        <div class="summary-change neutral">
+                            <i class="fas fa-minus"></i>
+                            <span>Không đổi</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="summary-card danger">
+                    <div class="summary-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="summary-content">
+                        <div class="summary-number" id="totalRepairCost" th:text="${totalRepairCost ?: '45M'} + ' VNĐ'">45M VNĐ</div>
+                        <div class="summary-label">Chi phí sửa chữa</div>
+                        <div class="summary-change negative">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+2M so với tháng trước</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MTTR Analysis Charts -->
+    <div class="report-charts">
+        <div class="row g-4">
+            <!-- MTTR Trend Chart -->
+            <div class="col-lg-8">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Xu hướng MTTR theo thời gian</h5>
+                        <div class="chart-controls">
+                            <select class="form-select form-select-sm" id="mttrTrendPeriod" onchange="updateMTTRTrendChart()">
+                                <option value="30" selected>30 ngày qua</option>
+                                <option value="90">3 tháng qua</option>
+                                <option value="180">6 tháng qua</option>
+                                <option value="365">1 năm qua</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="mttrTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Repair Time Breakdown -->
+            <div class="col-lg-4">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Phân tích thời gian sửa chữa</h5>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="repairTimeBreakdownChart"></canvas>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: var(--primary-blue);"></span>
+                            <span>Chẩn đoán: <strong id="legendDiagnosis">30%</strong></span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: var(--warning-orange);"></span>
+                            <span>Chờ vật tư: <strong id="legendWaiting">20%</strong></span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: var(--success-green);"></span>
+                            <span>Sửa chữa: <strong id="legendRepair">40%</strong></span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: var(--info-blue);"></span>
+                            <span>Kiểm tra: <strong id="legendTesting">10%</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Equipment MTTR Comparison -->
+            <div class="col-lg-6">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5 class="chart-title">So sánh MTTR theo thiết bị</h5>
+                        <div class="chart-controls">
+                            <select class="form-select form-select-sm" id="equipmentCategory" onchange="updateEquipmentMTTRChart()">
+                                <option value="all">Tất cả danh mục</option>
+                                <option value="THIET_BI_IT">Thiết bị IT</option>
+                                <option value="PHONG_HOC">Phòng học</option>
+                                <option value="PHONG_LAB">Phòng lab</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="equipmentMTTRChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Repair Cost Analysis -->
+            <div class="col-lg-6">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Phân tích chi phí sửa chữa</h5>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="repairCostChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Repair Performance Metrics -->
+    <div class="reliability-metrics">
+        <div class="reliability-card">
+            <div class="reliability-header">
+                <h5 class="reliability-title">Chỉ số hiệu suất sửa chữa</h5>
+                <div class="reliability-period">
+                    <span>Cập nhật: <span th:text="${lastUpdate}">30/07/2025 14:30</span></span>
+                </div>
+            </div>
+            <div class="reliability-body">
+                <div class="row g-4">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="reliability-item">
+                            <div class="reliability-icon mttr">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div class="reliability-content">
+                                <div class="reliability-value" th:text="${mttrBest ?: '1.2'} + 'h'">1.2h</div>
+                                <div class="reliability-label">MTTR nhanh nhất</div>
+                                <div class="reliability-trend positive">Máy in văn phòng</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="reliability-item">
+                            <div class="reliability-icon mttr">
+                                <i class="fas fa-snail"></i>
+                            </div>
+                            <div class="reliability-content">
+                                <div class="reliability-value" th:text="${mttrWorst ?: '8.5'} + 'h'">8.5h</div>
+                                <div class="reliability-label">MTTR chậm nhất</div>
+                                <div class="reliability-trend negative">Máy cắt CNC #2</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="reliability-item">
+                            <div class="reliability-icon mttr">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                            <div class="reliability-content">
+                                <div class="reliability-value" th:text="${firstTimeFixRate ?: '85'} + '%'">85%</div>
+                                <div class="reliability-label">Tỷ lệ sửa đúng lần đầu</div>
+                                <div class="reliability-trend positive">↑ 5%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="reliability-item">
+                            <div class="reliability-icon mttr">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="reliability-content">
+                                <div class="reliability-value" th:text="${averageTeamSize ?: '2.5'}">2.5</div>
+                                <div class="reliability-label">Số người TB/lần sửa</div>
+                                <div class="reliability-trend neutral">Không đổi</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Repair Analysis Table -->
+    <div class="report-tables">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h5 class="table-title">Phân tích chi tiết thời gian sửa chữa</h5>
+                        <div class="table-controls">
+                            <button class="btn btn-sm btn-outline-primary" onclick="refreshRepairAnalysis()">
+                                <i class="fas fa-sync-alt"></i> Làm mới
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Thiết bị</th>
+                                    <th>MTTR (giờ)</th>
+                                    <th>Số lần sửa</th>
+                                    <th>Chi phí TB (VNĐ)</th>
+                                    <th>Hiệu quả</th>
+                                    <th>Hành động</th>
+                                </tr>
+                                </thead>
+                                <tbody id="repairAnalysisTable">
+                                <!-- Data will be loaded by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h5 class="table-title">Lịch sử sửa chữa gần đây</h5>
+                    </div>
+                    <div class="table-body">
+                        <div class="failure-timeline" id="repairTimeline">
+                            <!-- Timeline will be loaded by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MTTR Recommendations -->
+    <div class="recommendations-section">
+        <div class="recommendations-card">
+            <div class="recommendations-header">
+                <h5 class="recommendations-title">
+                    <i class="fas fa-lightbulb text-warning me-2"></i>
+                    Khuyến nghị cải thiện MTTR
+                </h5>
+            </div>
+            <div class="recommendations-body">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="recommendation-item priority-high">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-boxes"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <h6>Quản lý vật tư</h6>
+                                <p>Cải thiện quản lý kho vật tư để giảm thời gian chờ từ 20% xuống 10%</p>
+                                <div class="recommendation-impact">
+                                    <span class="impact-label">Tác động MTTR:</span>
+                                    <span class="impact-value">-0.8h</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="recommendation-item priority-medium">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <h6>Cải thiện chẩn đoán</h6>
+                                <p>Sử dụng công cụ chẩn đoán tự động để giảm thời gian phát hiện lỗi</p>
+                                <div class="recommendation-impact">
+                                    <span class="impact-label">Tác động MTTR:</span>
+                                    <span class="impact-value">-0.6h</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="recommendation-item priority-low">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <h6>Chuẩn hóa quy trình</h6>
+                                <p>Xây dựng quy trình sửa chữa chuẩn để tăng hiệu quả</p>
+                                <div class="recommendation-impact">
+                                    <span class="impact-label">Tác động MTTR:</span>
+                                    <span class="impact-value">-0.4h</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="report-actions-section">
+        <div class="actions-card">
+            <h5 class="actions-title">
+                <i class="fas fa-tools text-primary me-2"></i>
+                Hành động nhanh
+            </h5>
+            <div class="row g-3">
+                <div class="col-md-3 col-sm-6">
+                    <a href="/bao-cao/mttr/chi-tiet" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Chi tiết MTTR</div>
+                            <small class="text-muted">Xem phân tích sâu</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <a href="/vat-tu/quan-ly-kho" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-warehouse"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Quản lý kho</div>
+                            <small class="text-muted">Tối ưu vật tư</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <a href="/bao-cao/so-sanh-mttr" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">So sánh MTTR</div>
+                            <small class="text-muted">So sánh với chuẩn ngành</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <a href="/doi-bao-tri/hieu-suat" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Hiệu suất đội</div>
+                            <small class="text-muted">Đánh giá team sửa chữa</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification Container -->
+<div id="notificationContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/dashboard.js"></script>
+<script src="/js/bao-cao.js"></script>
+<script src="/js/bao-cao-mttr.js"></script>
+</body>
+</html>

@@ -1,0 +1,2279 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - BaoTriStack</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Ocean Blue Color Palette */
+            --primary-blue: #1E40AF;
+            --secondary-blue: #3B82F6;
+            --light-blue: #DBEAFE;
+            --dark-blue: #1E3A8A;
+            --ocean-blue: #0EA5E9;
+            --sky-blue: #0284C7;
+
+            --teal: #0891B2;
+            --cyan: #06B6D4;
+            --navy: #1E293B;
+
+            --green: #10B981;
+            --orange: #F59E0B;
+            --red: #EF4444;
+            --purple: #8B5CF6;
+
+            /* Background Colors */
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #F1F5F9;
+            --bg-card: #FFFFFF;
+            --bg-nav: #1E40AF;
+            --bg-nav-hover: #1E3A8A;
+
+            /* Text Colors */
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --text-muted: #94A3B8;
+            --text-white: #FFFFFF;
+            --text-nav: #E2E8F0;
+
+            /* Border & Shadow */
+            --border-light: #E2E8F0;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --shadow-blue: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Top Header */
+        .top-header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            padding: 1rem 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+
+        .brand i {
+            color: var(--ocean-blue);
+            margin-right: 0.5rem;
+        }
+
+        .brand:hover {
+            color: var(--secondary-blue);
+            text-decoration: none;
+        }
+
+        .search-box {
+            position: relative;
+            width: 320px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--ocean-blue);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-btn {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .notification-btn:hover {
+            background: var(--ocean-blue);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: var(--red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-secondary);
+            position: relative;
+        }
+
+        .user-info:hover {
+            background: var(--light-blue);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%; /* Circular avatar */
+            background: linear-gradient(135deg, var(--primary-blue), var(--ocean-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .user-details h6 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        /* Navigation Menu */
+        .nav-menu {
+            background: var(--bg-nav);
+            box-shadow: var(--shadow-md);
+            padding: 0;
+            position: sticky;
+            top: 57px;
+            z-index: 1020; /* Giữ z-index của nav-menu */
+            overflow-x: auto; /* Giữ tính năng cuộn ngang */
+            white-space: nowrap;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            overflow-x: auto; /* Giữ cuộn ngang */
+            padding: 0 2rem;
+            position: relative; /* Tham chiếu cho dropdown */
+        }
+
+        .nav-list {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 0;
+            min-width: max-content;
+        }
+
+        .nav-item {
+            position: relative; /* Đặt dropdown dựa trên nav-item */
+            z-index: 1050; /* Tăng z-index cho nav-item để hỗ trợ dropdown */
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            color: var(--text-nav);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            color: var(--text-white);
+            background: var(--bg-nav-hover);
+            border-bottom-color: var(--ocean-blue);
+        }
+
+        .nav-link.active {
+            color: var(--text-white);
+            background: var(--bg-nav-hover);
+            border-bottom-color: var(--ocean-blue);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link i {
+            font-size: 1.1rem;
+        }
+
+        .badge-notification {
+            background: linear-gradient(135deg, var(--red), #DC2626);
+            color: white;
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: 0.5rem;
+            font-weight: 600;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            position: absolute; /* Đặt absolute dựa trên nav-item */
+            top: 100%; /* Hiển thị ngay dưới nav-link */
+            left: 0; /* Căn trái với nav-item */
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            padding: 0.75rem 0;
+            margin-top: 0.5rem;
+            min-width: 240px;
+            animation: dropdownSlide 0.3s ease-out;
+            z-index: 1060; /* Z-index cao hơn để hiển thị trên cùng */
+            display: none; /* Bootstrap sẽ thêm lớp 'show' */
+        }
+
+        /* Đảm bảo dropdown không bị ảnh hưởng bởi overflow của container cha */
+        .nav-menu,
+        .nav-container {
+            overflow: visible; /* Loại bỏ giới hạn overflow ảnh hưởng đến dropdown */
+        }
+
+        .dropdown-menu.show {
+            display: block; /* Bootstrap sẽ kích hoạt */
+        }
+
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-item {
+            padding: 0.875rem 1.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.9rem;
+            margin: 0.125rem 0;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            transform: translateX(5px);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .dropdown-item:hover i {
+            color: var(--primary-blue);
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 1rem;
+            border-color: var(--border-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-link {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            min-height: calc(100vh - 200px);
+            overflow-x: hidden;
+        }
+
+        .container-fluid {
+            max-width: 1400px;
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary-blue), var(--ocean-blue));
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 70%);
+            border-radius: 50%;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-text {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+
+        .welcome-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-welcome {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-welcome:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stat-card.devices::before {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+        }
+        .stat-card.maintenance::before {
+            background: linear-gradient(135deg, var(--orange), #F97316);
+        }
+        .stat-card.materials::before {
+            background: linear-gradient(135deg, var(--green), #059669);
+        }
+        .stat-card.alerts::before {
+            background: linear-gradient(135deg, var(--red), #DC2626);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.devices {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+        }
+        .stat-icon.maintenance {
+            background: linear-gradient(135deg, var(--orange), #F97316);
+        }
+        .stat-icon.materials {
+            background: linear-gradient(135deg, var(--green), #059669);
+        }
+        .stat-icon.alerts {
+            background: linear-gradient(135deg, var(--red), #DC2626);
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            gap: 0.3rem;
+        }
+
+        .stat-change.positive { color: var(--green); }
+        .stat-change.negative { color: var(--red); }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .action-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .action-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Recent Activities */
+        .recent-activities {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .activity-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+        /* Alerts */
+        .alert {
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-light);
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--text-primary);
+            border-left: 4px solid var(--green);
+        }
+
+        .alert-info {
+            background: var(--light-blue);
+            color: var(--text-primary);
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--text-primary);
+            border-left: 4px solid var(--orange);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--ocean-blue));
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-blue);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-light);
+            padding: 1.5rem 2rem;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Role-based visibility */
+        .role-admin { display: block; }
+        .role-manager { display: none; }
+        .role-technician { display: none; }
+        .role-user { display: none; }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .nav-link {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .search-box {
+                width: 200px;
+            }
+
+            .user-details {
+                display: none !important;
+            }
+
+            .welcome-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Dark Theme */
+        .dark-theme {
+            --bg-primary: #1E293B;
+            --bg-secondary: #2D3748;
+            --bg-card: #334155;
+            --text-primary: #F1F5F9;
+            --text-secondary: #CBD5E1;
+            --text-muted: #94A3B8;
+            --border-light: #4A5568;
+        }
+    </style>
+</head>
+
+<body data-user-role="admin">
+<!-- Top Header -->
+<header class="top-header">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="/dashboard" class="brand">
+                <i class="bi bi-gear-fill"></i>
+                BaoTriStack
+            </a>
+
+            <div class="d-flex align-items-center gap-3">
+                <!-- Search Box -->
+                <div class="search-box d-none d-md-block">
+                    <i class="bi bi-search"></i>
+                    <input type="text" placeholder="Tìm kiếm thiết bị, vật tư, yêu cầu bảo trì..." />
+                </div>
+
+                <div class="user-menu">
+                    <!-- Notification Button -->
+                    <button class="notification-btn">
+                        <i class="bi bi-bell"></i>
+                        <span class="notification-badge">7</span>
+                    </button>
+
+                    <!-- User Dropdown -->
+                    <div class="dropdown">
+                        <div class="user-info" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-avatar">
+                                <img src="https://via.placeholder.com/40" alt="User Avatar">
+                            </div>
+                            <div class="user-details">
+                                <h6>Admin</h6>
+                                <div class="user-role">Quản trị viên</div>
+                            </div>
+                            <i class="bi bi-chevron-down ms-2"></i>
+                        </div>
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/api/quan-ly-kho/ton-kho"><i class="bi bi-building"></i>Quản lý kho</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/api/vat-tu/thieu-hang"><i class="bi bi-exclamation-triangle"></i>Vật tư thiếu hàng</a></li>
+                            <li><a class="dropdown-item" href="/api/vat-tu/het-han"><i class="bi bi-clock"></i>Vật tư hết hạn</a></li>
+                            <li><a class="dropdown-item" href="/api/quan-ly-kho/bao-cao-ton-kho"><i class="bi bi-clipboard-data"></i>Báo cáo tồn kho</a></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i>Đăng xuất</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Navigation Menu -->
+<nav class="nav-menu">
+    <div class="nav-container">
+        <ul class="nav-list">
+            <!-- Dashboard -->
+            <li class="nav-item">
+                <a href="/dashboard" class="nav-link active">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <!-- Bảo trì -->
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-tools"></i>
+                    <span>Người dùng</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/nguoi-dung/danh-sach-nguoi-dung"><i class="bi bi-clipboard-check"></i>Danh Sách người dùng</a></li>
+                    <li class="role-admin role-manager"><a class="dropdown-item" href="/bao-tri/duyet-yeu-cau"><i class="bi bi-check2-square"></i>Duyet yêu cầu</a></li>
+                    <li class="role-admin role-manager"><a class="dropdown-item" href="/api/ke-hoach-bao-tri"><i class="bi bi-calendar3"></i>Kế hoạch bảo trì</a></li>
+                    <li class="role-technician role-admin"><a class="dropdown-item" href="/api/thuc-hien-bao-tri/cong-viec"><i class="bi bi-wrench"></i>Thêm người dùng</a></li>
+                    <li><a class="dropdown-item" href="/nguoi-dung/them-nguoi-dung"><i class="bi bi-search"></i>Kiểm tra định kỳ</a></li>
+                    <li><a class="dropdown-item" href="/bao-tri/lich-su"><i class="bi bi-clock-history"></i>Lịch sử bảo trì</a></li>
+                    <li><a class="dropdown-item" href="/api/canh-bao-loi"><i class="bi bi-exclamation-triangle"></i>Cảnh báo lỗi</a></li>
+                </ul>
+            </li>
+
+            <!-- Thiết bị (All roles) -->
+            <li class="nav-item">
+                <a href="/api/thiet-bi" class="nav-link">
+                    <i class="bi bi-cpu"></i>
+                    <span>Thiết bị</span>
+                </a>
+            </li>
+
+            <!-- Vật tư (All roles) -->
+            <li class="nav-item">
+                <a href="/api/vat-tu" class="nav-link">
+                    <i class="bi bi-box-seam"></i>
+                    <span>Vật tư</span>
+                </a>
+            </li>
+
+            <!-- Bảo trì -->
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-tools"></i>
+                    <span>Bảo trì</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/api/yeu-cau-bao-tri"><i class="bi bi-clipboard-check"></i>Yêu cầu bảo trì</a></li>
+                    <li class="role-admin role-manager"><a class="dropdown-item" href="/bao-tri/duyet-yeu-cau"><i class="bi bi-check2-square"></i>Duyet yêu cầu</a></li>
+                    <li class="role-admin role-manager"><a class="dropdown-item" href="/api/ke-hoach-bao-tri"><i class="bi bi-calendar3"></i>Kế hoạch bảo trì</a></li>
+                    <li class="role-technician role-admin"><a class="dropdown-item" href="/api/thuc-hien-bao-tri/cong-viec"><i class="bi bi-wrench"></i>Thực hiện bảo trì</a></li>
+                    <li><a class="dropdown-item" href="/api/kiem-tra-dinh-ky"><i class="bi bi-search"></i>Kiểm tra định kỳ</a></li>
+                    <li><a class="dropdown-item" href="/bao-tri/lich-su"><i class="bi bi-clock-history"></i>Lịch sử bảo trì</a></li>
+                    <li><a class="dropdown-item" href="/api/canh-bao-loi"><i class="bi bi-exclamation-triangle"></i>Cảnh báo lỗi</a></li>
+                </ul>
+            </li>
+
+            <!-- Đội bảo trì (Admin + Manager) -->
+            <li class="nav-item dropdown role-admin role-manager">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-people-fill"></i>
+                    <span>Đội bảo trì</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/api/doi-bao-tri"><i class="bi bi-list"></i>Danh sách đội</a></li>
+                    <li><a class="dropdown-item" href="/doi-bao-tri/them"><i class="bi bi-plus-circle"></i>Thêm đội mới</a></li>
+                    <li><a class="dropdown-item" href="/doi-bao-tri/thanh-vien"><i class="bi bi-person-plus"></i>Quản lý thành viên</a></li>
+                    <li><a class="dropdown-item" href="/doi-bao-tri/phan-cong"><i class="bi bi-person-gear"></i>Phân công công việc</a></li>
+                    <li><a class="dropdown-item" href="/doi-bao-tri/hieu-suat"><i class="bi bi-graph-up"></i>Hiệu suất đội</a></li>
+                </ul>
+            </li>
+
+            <!-- Báo cáo & Thống kê (Admin + Manager) -->
+            <li class="nav-item dropdown role-admin role-manager">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    <span>Báo cáo</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/api/bao-cao/tong-hop"><i class="bi bi-graph-up"></i>Báo cáo tổng hợp</a></li>
+                    <li><a class="dropdown-item" href="/api/bao-cao/oee"><i class="bi bi-speedometer"></i>Báo cáo OEE</a></li>
+                    <li><a class="dropdown-item" href="/api/bao-cao/mtbf"><i class="bi bi-clipboard-data"></i>Báo cáo MTBF</a></li>
+                    <li><a class="dropdown-item" href="/api/thong-ke/bao-tri"><i class="bi bi-pie-chart"></i>Thống kê bảo trì</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/api/thong-ke/thiet-bi"><i class="bi bi-cpu"></i>Báo cáo thiết bị</a></li>
+                    <li><a class="dropdown-item" href="/bao-cao/vat-tu"><i class="bi bi-box-seam"></i>Báo cáo vật tư</a></li>
+                    <li><a class="dropdown-item" href="/api/thong-ke/hieu-suat"><i class="bi bi-bar-chart"></i>Thống kê hiệu suất</a></li>
+                </ul>
+            </li>
+
+            <!-- Debug & Test (Admin only) -->
+            <li class="nav-item dropdown role-admin">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-bug"></i>
+                    <span>Debug</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/csrf-debug/token"><i class="bi bi-shield-lock"></i>CSRF Token</a></li>
+                    <li><a class="dropdown-item" href="/csrf-debug/test-form"><i class="bi bi-file-earmark-code"></i>Test Form</a></li>
+                    <li><a class="dropdown-item" href="/test-dashboard"><i class="bi bi-speedometer2"></i>Test Dashboard</a></li>
+                    <li><a class="dropdown-item" href="/api/debug/test-password"><i class="bi bi-person-check"></i>Check Auth</a></li>
+                    <li><a class="dropdown-item" href="/force-login"><i class="bi bi-key"></i>Force Login</a></li>
+                </ul>
+            </li>
+
+            <!-- Trợ giúp -->
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-question-circle"></i>
+                    <span>Trợ giúp</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/huong-dan"><i class="bi bi-book"></i>Hướng dẫn sử dụng</a></li>
+                    <li><a class="dropdown-item" href="/video-huong-dan"><i class="bi bi-play-circle"></i>Video hướng dẫn</a></li>
+                    <li><a class="dropdown-item" href="/faq"><i class="bi bi-question-square"></i>Câu hỏi thường gặp</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/lien-he"><i class="bi bi-envelope"></i>Liên hệ hỗ trợ</a></li>
+                    <li><a class="dropdown-item" href="/about"><i class="bi bi-info-circle"></i>Về hệ thống</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container-fluid">
+        <!-- Alert Messages -->
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>
+            <strong>Thành công!</strong> Hệ thống quản lý thiết bị đang hoạt động bình thường.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <div class="welcome-content">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="welcome-title">🔧 Chào mừng trở lại!</h1>
+                        <p class="welcome-text">
+                            Xin chào, <strong>Admin</strong>! Hệ thống quản lý thiết bị BaoTriStack đang hoạt động tốt.
+                            Hôm nay có <strong>15 yêu cầu bảo trì</strong> cần xử lý và <strong>3 thiết bị</strong> cần kiểm tra định kỳ.
+                        </p>
+                        <div class="welcome-actions">
+                            <a href="/api/yeu-cau-bao-tri" class="btn-welcome">
+                                <i class="bi bi-plus-lg me-2"></i>Tạo yêu cầu bảo trì
+                            </a>
+                            <a href="#" class="btn-welcome" id="exportDataBtn">
+                                <i class="bi bi-download me-2"></i>Xuất báo cáo
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div style="font-size: 4rem; opacity: 0.3;">
+                            <i class="bi bi-gear-wide-connected"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card devices">
+                <div class="stat-icon devices">
+                    <i class="bi bi-cpu"></i>
+                </div>
+                <div class="stat-value">247</div>
+                <div class="stat-label">Tổng số thiết bị</div>
+                <div class="stat-change positive">
+                    <i class="bi bi-arrow-up"></i>
+                    <span>5 thiết bị mới</span>
+                </div>
+            </div>
+
+            <div class="stat-card maintenance">
+                <div class="stat-icon maintenance">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <div class="stat-value">38</div>
+                <div class="stat-label">Yêu cầu bảo trì</div>
+                <div class="stat-change positive">
+                    <i class="bi bi-arrow-up"></i>
+                    <span>12 yêu cầu mới</span>
+                </div>
+            </div>
+
+            <div class="stat-card materials">
+                <div class="stat-icon materials">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <div class="stat-value">1,542</div>
+                <div class="stat-label">Vật tư trong kho</div>
+                <div class="stat-change negative">
+                    <i class="bi bi-arrow-down"></i>
+                    <span>15 loại thiếu hàng</span>
+                </div>
+            </div>
+
+            <div class="stat-card alerts">
+                <div class="stat-icon alerts">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <div class="stat-value">7</div>
+                <div class="stat-label">Cảnh báo</div>
+                <div class="stat-change negative">
+                    <i class="bi bi-arrow-up"></i>
+                    <span>3 cảnh báo mới</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Quick Actions -->
+            <div class="col-lg-8">
+                <h3 class="section-title">
+                    <i class="bi bi-lightning"></i>
+                    Thao tác nhanh
+                </h3>
+                <div class="quick-actions">
+                    <!-- Admin Actions -->
+                    <div class="role-admin">
+                        <a href="/api/thiet-bi" class="action-card">
+                            <div class="action-icon" style="background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));">
+                                <i class="bi bi-cpu"></i>
+                            </div>
+                            <div class="action-title">Quản lý thiết bị</div>
+                            <div class="action-desc">Thêm, sửa, xóa thiết bị và theo dõi trạng thái</div>
+                        </a>
+
+                        <a href="/api/nguoi-dung" class="action-card">
+                            <div class="action-icon" style="background: linear-gradient(135deg, var(--ocean-blue), var(--cyan));">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <div class="action-title">Quản lý người dùng</div>
+                            <div class="action-desc">Thêm người dùng và phân quyền hệ thống</div>
+                        </a>
+
+                        <a href="/api/doi-bao-tri" class="action-card">
+                            <div class="action-icon" style="background: linear-gradient(135deg, var(--teal), var(--sky-blue));">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <div class="action-title">Quản lý đội bảo trì</div>
+                            <div class="action-desc">Tạo đội và phân công nhân viên bảo trì</div>
+                        </a>
+
+                        <a href="/api/bao-cao/tong-hop" class="action-card">
+                            <div class="action-icon" style="background: linear-gradient(135deg, var(--purple), #A855F7);">
+                                <i class="bi bi-file-earmark-bar-graph"></i>
+                            </div>
+                            <div class="action-title">Báo cáo tổng hợp</div>
+                            <div class="action-desc">Xem và xuất các báo cáo chi tiết</div>
+                        </a>
+                    </div>
+
+                    <!-- Manager Actions -->
+                    <div class="role-manager" style="display: none;">
+                        <a href="/api/thiet-bi" class="action-card">
+                            <div class="action-icon" style="background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));">
+                                <i class="bi bi-cpu"></i>
+                            </div>
+                            <div class="action-title">Quản lý thiết bị</div>
+                            <div class="action-desc">Theo dõi và quản lý thiết bị</div>
+                        </a>
+
+                        <a href="/api/vat-tu" class="action-card">
+                            <div class="action-icon" style="background: linear-gradient(135deg, var(--green), #059669);">
+                                <i class="bi bi-box-seam"></i>
+                            </div>
+                            <div class="action-title">Quản lý vật tư</div>
+                            <div class="action-desc">Kiểm soát tồn kho và nhập xuất</div>
+                        </a>
+
+                        <a href="/api/ke-hoach-bao-tri" class="action-card">
+                            <div class="action-icon" style="background: linear-gradient(135deg, var(--orange), #F97316);">
+                                <i class="bi bi-calendar3"></i>
+                            </div>
+                            <div class="action-title">Kế hoạch bảo trì</div>
+                            <div class="action-desc">Lập và quản lý kế hoạch bảo trì</div>
+                        </a>
+                    </div>
+
+                    <!-- Technician Actions -->
+                    <div class="role-technician" style="display: none;">
+                        <a href="/api/thuc-hien-bao-tri/cong-viec" class="action-card">
+                            <div class="action-icon" style="background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));">
+                                <i class="bi bi-wrench"></i>
+                            </div>
+                            <div class="action-title">Thực hiện bảo trì</div>
+                            <div class="action-desc">Xem và thực hiện công việc được phân công</div>
+                        </a>
+
+                        <a href="/api/kiem-tra-dinh-ky" class="action-card">
+                            <div class="action-icon" style="background: linear-gradient(135deg, var(--orange), #F97316);">
+                                <i class="bi bi-search"></i>
+                            </div>
+                            <div class="action-title">Kiểm tra định kỳ</div>
+                            <div class="action-desc">Thực hiện kiểm tra định kỳ thiết bị</div>
+                        </a>
+
+                        <a href="/api/canh-bao-loi" class="action-card">
+                            <div class="action-icon" style="background: linear-gradient(135deg, var(--red), #DC2626);">
+                                <i class="bi bi-exclamation-triangle"></i>
+                            </div>
+                            <div class="action-title">Xử lý cảnh báo</div>
+                            <div class="action-desc">Xem và xử lý cảnh báo lỗi thiết bị</div>
+                        </a>
+                    </div>
+
+                    <!-- All Users Actions -->
+                    <a href="/api/yeu-cau-bao-tri" class="action-card">
+                        <div class="action-icon" style="background: linear-gradient(135deg, var(--green), #059669);">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <div class="action-title">Yêu cầu bảo trì</div>
+                        <div class="action-desc">Tạo và theo dõi yêu cầu bảo trì thiết bị</div>
+                    </a>
+
+                    <a href="/api/vat-tu" class="action-card">
+                        <div class="action-icon" style="background: linear-gradient(135deg, var(--teal), var(--sky-blue));">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                        <div class="action-title">Tra cứu vật tư</div>
+                        <div class="action-desc">Tìm kiếm và kiểm tra tình trạng vật tư</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Activities -->
+            <div class="col-lg-4">
+                <h3 class="section-title">
+                    <i class="bi bi-clock-history"></i>
+                    Hoạt động gần đây
+                </h3>
+                <div class="recent-activities">
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: var(--green);">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Hoàn thành bảo trì TB-001</div>
+                            <div class="activity-desc">Máy in Canon đã được bảo trì thành công</div>
+                        </div>
+                        <div class="activity-time">5 phút trước</div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: var(--orange);">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Cảnh báo thiết bị TB-045</div>
+                            <div class="activity-desc">Máy chiếu phòng 201 cần kiểm tra</div>
+                        </div>
+                        <div class="activity-time">15 phút trước</div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: var(--primary-blue);">
+                            <i class="bi bi-plus-circle"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Thêm thiết bị mới</div>
+                            <div class="activity-desc">Laptop Dell Latitude 5520 - Phòng IT</div>
+                        </div>
+                        <div class="activity-time">1 giờ trước</div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: var(--red);">
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Từ chối yêu cầu YC-123</div>
+                            <div class="activity-desc">Không đủ vật tư thay thế</div>
+                        </div>
+                        <div class="activity-time">2 giờ trước</div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: var(--teal);">
+                            <i class="bi bi-box-arrow-in-down"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Nhập vật tư VT-567</div>
+                            <div class="activity-desc">100 đơn vị RAM DDR4 8GB đã nhập kho</div>
+                        </div>
+                        <div class="activity-time">3 giờ trước</div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: var(--purple);">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Phân công đội bảo trì</div>
+                            <div class="activity-desc">Đội IT được phân công 5 thiết bị mới</div>
+                        </div>
+                        <div class="activity-time">4 giờ trước</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role-based Information Cards -->
+        <div class="row mt-4">
+            <!-- Admin Dashboard -->
+            <div class="col-12 role-admin">
+                <div class="alert alert-info" role="alert">
+                    <h5><i class="bi bi-shield-check me-2"></i>Quản trị viên - Toàn quyền truy cập</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <strong>👥 Người dùng:</strong> Thêm, sửa, xóa, phân quyền
+                        </div>
+                        <div class="col-md-3">
+                            <strong>🔧 Thiết bị:</strong> Quản lý đầy đủ và kiểm soát
+                        </div>
+                        <div class="col-md-3">
+                            <strong>📦 Vật tư:</strong> Quản lý kho và kiểm soát tồn kho
+                        </div>
+                        <div class="col-md-3">
+                            <strong>📊 Báo cáo:</strong> Xem tất cả báo cáo và thống kê
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-3">
+                            <strong>🔨 Bảo trì:</strong> Quản lý toàn bộ quy trình
+                        </div>
+                        <div class="col-md-3">
+                            <strong>👨‍🔧 Đội bảo trì:</strong> Quản lý đội và phân công
+                        </div>
+                        <div class="col-md-3">
+                            <strong>⚙️ Hệ thống:</strong> Cài đặt và cấu hình
+                        </div>
+                        <div class="col-md-3">
+                            <strong>🐛 Debug:</strong> Công cụ kiểm tra hệ thống
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manager Dashboard -->
+            <div class="col-12 role-manager" style="display: none;">
+                <div class="alert alert-success" role="alert">
+                    <h5><i class="bi bi-person-gear me-2"></i>Quản lý - Quyền điều hành</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <strong>🔧 Thiết bị:</strong> Quản lý và phân công thiết bị
+                        </div>
+                        <div class="col-md-4">
+                            <strong>📦 Vật tư:</strong> Quản lý kho và vật tư
+                        </div>
+                        <div class="col-md-4">
+                            <strong>👨‍🔧 Đội bảo trì:</strong> Quản lý đội và phân công công việc
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <strong>🔨 Bảo trì:</strong> Phê duyệt và theo dõi yêu cầu
+                        </div>
+                        <div class="col-md-4">
+                            <strong>📋 Kế hoạch:</strong> Lập kế hoạch bảo trì
+                        </div>
+                        <div class="col-md-4">
+                            <strong>📊 Báo cáo:</strong> Xem báo cáo và thống kê
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technician Dashboard -->
+            <div class="col-12 role-technician" style="display: none;">
+                <div class="alert alert-warning" role="alert">
+                    <h5><i class="bi bi-tools me-2"></i>Kỹ thuật viên - Thực hiện bảo trì</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <strong>🔨 Thực hiện:</strong> Công việc bảo trì được phân công
+                        </div>
+                        <div class="col-md-3">
+                            <strong>📋 Yêu cầu:</strong> Tạo và theo dõi yêu cầu bảo trì
+                        </div>
+                        <div class="col-md-3">
+                            <strong>🔍 Kiểm tra:</strong> Thực hiện kiểm tra định kỳ
+                        </div>
+                        <div class="col-md-3">
+                            <strong>⚠️ Cảnh báo:</strong> Xử lý cảnh báo lỗi thiết bị
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Dashboard -->
+            <div class="col-12 role-user" style="display: none;">
+                <div class="alert alert-secondary" role="alert">
+                    <h5><i class="bi bi-person me-2"></i>Người dùng - Quyền cơ bản</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <strong>📋 Yêu cầu:</strong> Tạo yêu cầu bảo trì thiết bị
+                        </div>
+                        <div class="col-md-3">
+                            <strong>👁️ Theo dõi:</strong> Xem trạng thái yêu cầu
+                        </div>
+                        <div class="col-md-3">
+                            <strong>🔧 Thiết bị:</strong> Tra cứu thông tin thiết bị
+                        </div>
+                        <div class="col-md-3">
+                            <strong>👤 Cá nhân:</strong> Cập nhật thông tin cá nhân
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="alert alert-success mt-4" role="alert">
+            <h5><i class="bi bi-check-circle me-2"></i>Trạng thái hệ thống</h5>
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>✅ Spring Security:</strong> Hoạt động
+                </div>
+                <div class="col-md-3">
+                    <strong>✅ Database:</strong> Kết nối thành công
+                </div>
+                <div class="col-md-3">
+                    <strong>✅ User:</strong> <span>Admin</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>✅ Role:</strong> <span>QUAN_TRI_VIEN</span>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-3">
+                    <strong>🔧 Equipment API:</strong> <span class="text-success" data-api="Equipment API">Online</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>📦 Materials API:</strong> <span class="text-success" data-api="Materials API">Online</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>🔨 Maintenance API:</strong> <span class="text-success" data-api="Maintenance API">Online</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>📊 Reports API:</strong> <span class="text-success" data-api="Reports API">Online</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Equipment Health Monitor (Admin/Manager only) -->
+        <div class="row mt-4 role-admin role-manager">
+            <div class="col-12">
+                <div class="alert alert-info" role="alert">
+                    <h5><i class="bi bi-activity me-2"></i>Tình trạng thiết bị trong hệ thống</h5>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="text-center">
+                                <div class="text-success" style="font-size: 2rem;">85%</div>
+                                <small class="text-muted">Hoạt động tốt</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="text-center">
+                                <div class="text-warning" style="font-size: 2rem;">10%</div>
+                                <small class="text-muted">Cần bảo trì</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="text-center">
+                                <div class="text-danger" style="font-size: 2rem;">5%</div>
+                                <small class="text-muted">Hỏng hóc</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="text-primary" style="font-size: 1.5rem;">92.5%</div>
+                                <small class="text-muted">Hiệu suất OEE trung bình</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="text-info" style="font-size: 1.5rem;">320h</div>
+                                <small class="text-muted">MTBF trung bình</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Maintenance Alerts (All roles) -->
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="alert alert-warning" role="alert">
+                    <h6><i class="bi bi-exclamation-triangle me-2"></i>Cảnh báo bảo trì</h6>
+                    <ul class="mb-0">
+                        <li>3 thiết bị cần kiểm tra định kỳ trong tuần này</li>
+                        <li>5 yêu cầu bảo trì đang chờ phê duyệt</li>
+                        <li>2 thiết bị vượt quá thời gian bảo trì dự kiến</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="alert alert-danger" role="alert">
+                    <h6><i class="bi bi-exclamation-circle me-2"></i>Vật tư cần chú ý</h6>
+                    <ul class="mb-0">
+                        <li>15 loại vật tư dưới mức tồn kho tối thiểu</li>
+                        <li>8 loại vật tư sắp hết hạn sử dụng</li>
+                        <li>3 yêu cầu nhập vật tư đang chờ xử lý</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <div class="d-flex align-items-center mb-1">
+                    <i class="bi bi-gear-fill me-2" style="color: var(--primary-blue);"></i>
+                    <span class="fw-semibold">BaoTriStack</span>
+                    <span class="ms-2">- Hệ thống quản lý thiết bị và bảo trì</span>
+                </div>
+                <div>
+                    © <span>2024</span>
+                    BaoTriStack. Được phát triển với ❤️ cho các trường học Việt Nam.
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href="/huong-dan">Hướng dẫn</a>
+                <a href="/ho-tro">Hỗ trợ</a>
+                <a href="/lien-he">Liên hệ</a>
+                <span>v<span>1.0.0</span></span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Search Results Container -->
+    <div id="searchResults" class="position-absolute bg-white border rounded shadow-sm p-2" style="display: none; max-height: 300px; overflow-y: auto; z-index: 1050; width: 320px; left: 0; top: 100%;"></div>
+
+    <!-- Quick Add Modal -->
+    <div class="modal fade" id="quickAddModal" tabindex="-1" aria-labelledby="quickAddModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="quickAddModalLabel">Thêm thiết bị nhanh</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="quickAddForm">
+                        <div class="mb-3">
+                            <label for="equipmentCode" class="form-label">Mã thiết bị</label>
+                            <input type="text" class="form-control" id="equipmentCode" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="equipmentName" class="form-label">Tên thiết bị</label>
+                            <input type="text" class="form-control" id="equipmentName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="equipmentLocation" class="form-label">Vị trí</label>
+                            <input type="text" class="form-control" id="equipmentLocation">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Thêm thiết bị</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preferences Modal -->
+    <div class="modal fade" id="preferencesModal" tabindex="-1" aria-labelledby="preferencesModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="preferencesModalLabel">Cài đặt cá nhân</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="preferencesForm">
+                        <div class="mb-3">
+                            <label class="form-label">Chủ đề</label>
+                            <select class="form-select" id="themeSelect">
+                                <option value="light">Sáng</option>
+                                <option value="dark">Tối</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-check-label">Thông báo</label>
+                            <input type="checkbox" class="form-check-input" id="notificationsToggle" checked>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tần suất cập nhật (ms)</label>
+                            <input type="number" class="form-control" id="refreshRate" min="60000" value="300000">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Lưu cài đặt</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="scheduleModalLabel">Lên lịch bảo trì</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="scheduleForm">
+                        <div class="mb-3">
+                            <label class="form-label">Mã thiết bị</label>
+                            <input type="text" class="form-control" id="scheduleEquipmentId" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ngày bảo trì</label>
+                            <input type="datetime-local" class="form-control" id="scheduleDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="scheduleDescription" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Lên lịch</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            // Get current user role from body attribute
+            const userRole = document.body.getAttribute('data-user-role') || 'user';
+
+            // Show/hide elements based on user role
+            function updateUIBasedOnRole() {
+                document.querySelectorAll('.role-admin, .role-manager, .role-technician, .role-user').forEach(el => {
+                    el.style.display = 'none';
+                });
+
+                if (userRole === 'admin') {
+                    document.querySelectorAll('.role-admin').forEach(el => {
+                        el.style.display = 'block';
+                    });
+                } else if (userRole === 'manager') {
+                    document.querySelectorAll('.role-manager, .role-admin').forEach(el => {
+                        el.style.display = 'block';
+                    });
+                } else if (userRole === 'technician') {
+                    document.querySelectorAll('.role-technician').forEach(el => {
+                        el.style.display = 'block';
+                    });
+                } else {
+                    document.querySelectorAll('.role-user').forEach(el => {
+                        el.style.display = 'block';
+                    });
+                }
+            }
+
+            updateUIBasedOnRole();
+
+            // Auto-hide alerts
+            const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
+            alerts.forEach(alert => {
+                if (!alert.classList.contains('alert-success') || !alert.textContent.includes('Trạng thái hệ thống')) {
+                    setTimeout(() => {
+                        if (alert.querySelector('.btn-close')) {
+                            const bsAlert = new bootstrap.Alert(alert);
+                            bsAlert.close();
+                        }
+                    }, 5000);
+                }
+            });
+
+            // Active menu highlighting
+            const currentPath = window.location.pathname;
+            const menuLinks = document.querySelectorAll('.nav-link[href]');
+
+            menuLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    menuLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                }
+            });
+
+            // Enhanced dropdown behavior
+            const dropdownElements = document.querySelectorAll('.dropdown-toggle');
+            dropdownElements.forEach(element => {
+                element.addEventListener('show.bs.dropdown', function () {
+                    this.classList.add('show');
+                });
+
+                element.addEventListener('hide.bs.dropdown', function () {
+                    this.classList.remove('show');
+                });
+            });
+
+            // Real-time updates simulation for equipment management
+            function updateNotifications() {
+                const badges = document.querySelectorAll('.badge-notification, .notification-badge');
+                badges.forEach(badge => {
+                    const currentValue = parseInt(badge.textContent) || 0;
+                    if (Math.random() > 0.9) {
+                        const change = Math.floor(Math.random() * 3) - 1;
+                        const newValue = Math.max(0, currentValue + change);
+                        badge.textContent = newValue;
+                        if (newValue === 0) {
+                            badge.style.display = 'none';
+                        } else {
+                            badge.style.display = 'flex';
+                        }
+                    }
+                });
+            }
+
+            setInterval(updateNotifications, 30000);
+
+            // Interactive enhancements
+            document.querySelectorAll('.action-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) scale(1.02)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // Stat cards animation
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.style.animationPlayState = 'paused';
+                observer.observe(card);
+            });
+
+            // Equipment search with API integration
+            async function searchEquipment(query) {
+                try {
+                    const response = await fetch(`/api/thiet-bi/tim-kiem?tuKhoa=${encodeURIComponent(query)}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            [header]: token
+                        }
+                    });
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error('Error searching equipment:', error);
+                    showNotification('Lỗi khi tìm kiếm thiết bị!', 'error');
+                    return [];
+                }
+            }
+
+            // Display search results
+            function displaySearchResults(results) {
+                const searchResults = document.getElementById('searchResults');
+                if (!searchResults) return;
+
+                if (results.length === 0) {
+                    searchResults.style.display = 'none';
+                    return;
+                }
+
+                searchResults.innerHTML = '';
+                results.forEach(item => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'p-2 border-bottom cursor-pointer text-primary';
+                    resultItem.innerHTML = `<strong>${item.maThietBi || 'N/A'}</strong> - ${item.tenThietBi || 'Không có tên'}`;
+                    resultItem.addEventListener('click', () => {
+                        window.location.href = `/api/thiet-bi/chi-tiet?id=${item.idThietBi}`;
+                        searchResults.style.display = 'none';
+                    });
+                    searchResults.appendChild(resultItem);
+                });
+                searchResults.style.display = 'block';
+            }
+
+            // Bind search input to function
+            const searchInput = document.querySelector('.search-box input');
+            if (searchInput) {
+                searchInput.addEventListener('input', async function(e) {
+                    try {
+                        const query = e.target.value.trim();
+                        if (query.length > 2) {
+                            const results = await searchEquipment(query);
+                            displaySearchResults(results);
+                        } else {
+                            document.getElementById('searchResults').style.display = 'none';
+                        }
+                    } catch (error) {
+                        console.error('Error handling search input:', error);
+                    }
+                });
+
+                // Hide results when clicking outside
+                document.addEventListener('click', function(e) {
+                    const searchResults = document.getElementById('searchResults');
+                    if (searchResults && !searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.style.display = 'none';
+                    }
+                });
+            }
+
+            // Keyboard shortcuts for equipment management
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.shiftKey) {
+                    switch(e.key) {
+                        case 'D':
+                            e.preventDefault();
+                            window.location.href = '/dashboard';
+                            break;
+                        case 'T':
+                            e.preventDefault();
+                            window.location.href = '/api/thiet-bi';
+                            break;
+                        case 'V':
+                            e.preventDefault();
+                            window.location.href = '/api/vat-tu';
+                            break;
+                        case 'M':
+                            e.preventDefault();
+                            window.location.href = '/api/yeu-cau-bao-tri';
+                            break;
+                        case 'R':
+                            e.preventDefault();
+                            if (userRole === 'admin' || userRole === 'manager') {
+                                window.location.href = '/api/bao-cao/tong-hop';
+                            }
+                            break;
+                        case 'U':
+                            e.preventDefault();
+                            if (userRole === 'admin') {
+                                window.location.href = '/api/nguoi-dung';
+                            }
+                            break;
+                    }
+                }
+
+                // Quick search with '/' key
+                if (e.key === '/' && !e.ctrlKey && !e.altKey) {
+                    e.preventDefault();
+                    const searchInput = document.querySelector('.search-box input');
+                    if (searchInput) {
+                        searchInput.focus();
+                    }
+                }
+            });
+
+            // Role switching for demo purposes (only in development)
+            function switchRole(newRole) {
+                document.body.setAttribute('data-user-role', newRole);
+                updateUIBasedOnRole();
+                console.log(`Switched to role: ${newRole}`);
+            }
+
+            // Add role switching buttons for demo (remove in production)
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                // const roleButtons = document.createElement('div');
+                // roleButtons.style.cssText = 'position: fixed; top: 10px; right: 10px; z-index: 9999; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);';
+                // roleButtons.innerHTML = `
+                //     <div style="font-size: 12px; margin-bottom: 5px;">Demo - Switch Role:</div>
+                //     <button onclick="switchRole('admin')" style="margin: 2px; padding: 4px 8px; font-size: 10px;">Admin</button>
+                //     <button onclick="switchRole('manager')" style="margin: 2px; padding: 4px 8px; font-size: 10px;">Manager</button>
+                //     <button onclick="switchRole('technician')" style="margin: 2px; padding: 4px 8px; font-size: 10px;">Technician</button>
+                //     <button onclick="switchRole('user')" style="margin: 2px; padding: 4px 8px; font-size: 10px;">User</button>
+                // `;
+                // document.body.appendChild(roleButtons);
+
+                // window.switchRole = switchRole;
+            }
+
+            // Equipment status monitoring (simulate real-time updates)
+            function updateEquipmentStatus() {
+                const statusElements = document.querySelectorAll('.stat-value');
+
+                const equipmentCount = statusElements[0];
+                if (equipmentCount && Math.random() > 0.95) {
+                    const current = parseInt(equipmentCount.textContent);
+                    equipmentCount.textContent = current + (Math.random() > 0.5 ? 1 : -1);
+                }
+
+                const maintenanceCount = statusElements[1];
+                if (maintenanceCount && Math.random() > 0.9) {
+                    const current = parseInt(maintenanceCount.textContent);
+                    maintenanceCount.textContent = Math.max(0, current + (Math.random() > 0.7 ? 1 : -1));
+                }
+            }
+
+            setInterval(updateEquipmentStatus, 120000);
+
+
+            // API Health Check
+            async function checkAPIHealth() {
+                const apis = [
+                    { name: 'Equipment API', endpoint: '/api/thiet-bi' },
+                    { name: 'Materials API', endpoint: '/api/vat-tu' },
+                    { name: 'Maintenance API', endpoint: '/api/yeu-cau-bao-tri' },
+                    { name: 'Reports API', endpoint: '/api/bao-cao/tong-hop' }
+                ];
+
+                // Iterate through each API and check its status
+                for (const api of apis) {
+                    try {
+                        // Perform a HEAD request to check API availability
+                        const response = await fetch(api.endpoint, {
+                            method: 'HEAD',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                [header]: token
+                            },
+                            timeout: 5000 // Set a 5-second timeout
+                        });
+
+                        // Select the corresponding status element in the UI
+                        const statusElement = document.querySelector(`[data-api="${api.name}"]`);
+                        if (statusElement) {
+                            // Update the status based on the response
+                            if (response.ok) {
+                                statusElement.className = 'text-success';
+                                statusElement.textContent = 'Online';
+                            } else {
+                                statusElement.className = 'text-danger';
+                                statusElement.textContent = `Offline (Status: ${response.status})`;
+                            }
+                        }
+                    } catch (error) {
+                        // Handle network or timeout errors
+                        const statusElement = document.querySelector(`[data-api="${api.name}"]`);
+                        if (statusElement) {
+                            statusElement.className = 'text-danger';
+                            statusElement.textContent = 'Offline';
+                            log(`Lỗi kiểm tra API ${api.name} tại ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}: ${error.message}`);
+                            showNotification(`Lỗi kết nối đến ${api.name}. Vui lòng kiểm tra lại!`, 'error');
+                        }
+                    }
+                }
+            }
+
+// Schedule API health checks
+            setInterval(checkAPIHealth, 300000); // Check every 5 minutes
+            // Function to initialize log viewer
+            function initLogViewer() {
+                const logContainer = document.createElement('div');
+                logContainer.className = 'log-viewer bg-dark text-white p-3 rounded shadow-sm position-fixed';
+                logContainer.style.cssText = 'bottom: 20px; right: 20px; width: 400px; height: 300px; overflow-y: auto; z-index: 9998; display: none;';
+                logContainer.innerHTML = '<h6 class="mb-2">Nhật ký hệ thống</h6>';
+                document.body.appendChild(logContainer);
+
+                const logToggle = document.createElement('button');
+                logToggle.className = 'btn btn-info btn-sm position-fixed';
+                logToggle.style.cssText = 'bottom: 330px; right: 20px; z-index: 9999;';
+                logToggle.innerHTML = '<i class="bi bi-journal-text"></i>';
+                logToggle.addEventListener('click', () => {
+                    logContainer.style.display = logContainer.style.display === 'none' ? 'block' : 'none';
+                });
+                document.body.appendChild(logToggle);
+
+                function appendLog(message) {
+                    const logEntry = document.createElement('div');
+                    logEntry.textContent = `[${new Date().toLocaleTimeString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}] ${message}`;
+                    logContainer.appendChild(logEntry);
+                    logContainer.scrollTop = logContainer.scrollHeight;
+                }
+
+                window.addEventListener('log', (e) => appendLog(e.detail));
+                return appendLog;
+            }
+
+            // Initialize log function
+            const log = initLogViewer();
+
+            // Function to show notifications
+            function showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+                notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+                notification.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 5000);
+            }
+
+            // CSRF Token handling (placeholder - replace with actual token from server)
+            const header = 'X-CSRF-TOKEN';
+            const token = 'your-csrf-token-here'; // Replace with dynamic token from server
+
+            // Export dashboard data functionality
+            function exportDashboardData() {
+                try {
+                    const data = {
+                        equipment: {
+                            total: document.querySelector('.stat-card.devices .stat-value')?.textContent || 'N/A',
+                            new: document.querySelector('.stat-card.devices .stat-change')?.textContent.match(/\d+/)?.[0] || '0'
+                        },
+                        maintenance: {
+                            total: document.querySelector('.stat-card.maintenance .stat-value')?.textContent || 'N/A',
+                            new: document.querySelector('.stat-card.maintenance .stat-change')?.textContent.match(/\d+/)?.[0] || '0'
+                        },
+                        materials: {
+                            total: document.querySelector('.stat-card.materials .stat-value')?.textContent || 'N/A',
+                            issues: document.querySelector('.stat-card.materials .stat-change')?.textContent.match(/\d+/)?.[0] || '0'
+                        },
+                        alerts: {
+                            total: document.querySelector('.stat-card.alerts .stat-value')?.textContent || 'N/A',
+                            new: document.querySelector('.stat-card.alerts .stat-change')?.textContent.match(/\d+/)?.[0] || '0'
+                        },
+                        timestamp: new Date().toISOString()
+                    };
+
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `dashboard-data-${new Date().toISOString().split('T')[0]}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showNotification('Dữ liệu đã được xuất thành công!', 'success');
+                } catch (error) {
+                    console.error('Error exporting dashboard data:', error);
+                    showNotification('Lỗi khi xuất dữ liệu!', 'error');
+                }
+            }
+
+            // Bind export button
+            const exportBtn = document.getElementById('exportDataBtn');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    exportDashboardData();
+                });
+            }
+
+            // Simulate logout functionality
+            document.querySelectorAll('.dropdown-item[href="/logout"]').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    try {
+                        console.log('Logging out...');
+                        showNotification('Đăng xuất thành công!', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/login';
+                        }, 1000);
+                    } catch (error) {
+                        console.error('Error during logout:', error);
+                        showNotification('Lỗi khi đăng xuất!', 'error');
+                    }
+                });
+            });
+
+            // Periodic system health check
+            function checkSystemHealth() {
+                try {
+                    const healthElements = document.querySelectorAll('.system-health [data-status]');
+                    healthElements.forEach(el => {
+                        const isHealthy = Math.random() > 0.05; // 95% chance of healthy
+                        el.textContent = isHealthy ? 'Online' : 'Offline';
+                        el.className = isHealthy ? 'text-success' : 'text-danger';
+                    });
+                } catch (error) {
+                    console.error('Error checking system health:', error);
+                }
+            }
+
+            setInterval(checkSystemHealth, 60000); // Check every minute
+
+            // Initialize tooltips
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+            // Quick add form submission (Admin only)
+            const quickAddForm = document.getElementById('quickAddForm');
+            if (quickAddForm && userRole === 'admin') {
+                quickAddForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    try {
+                        const equipment = {
+                            maThietBi: document.getElementById('equipmentCode').value,
+                            tenThietBi: document.getElementById('equipmentName').value,
+                            viTri: document.getElementById('equipmentLocation').value
+                        };
+                        const response = await fetch('/api/thiet-bi', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                [header]: token
+                            },
+                            body: JSON.stringify(equipment)
+                        });
+                        if (response.ok) {
+                            showNotification('Thêm thiết bị thành công!', 'success');
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('quickAddModal'));
+                            modal.hide();
+                            quickAddForm.reset();
+                            const equipmentCount = document.querySelector('.stat-card.devices .stat-value');
+                            if (equipmentCount) {
+                                equipmentCount.textContent = parseInt(equipmentCount.textContent) + 1;
+                            }
+                        } else {
+                            throw new Error('Failed to add equipment');
+                        }
+                    } catch (error) {
+                        console.error('Error adding equipment:', error);
+                        showNotification('Lỗi khi thêm thiết bị!', 'error');
+                    }
+                });
+            }
+
+            // Bind quick add button (Admin only)
+            const quickAddBtn = document.querySelector('.btn-welcome[href="/api/thiet-bi"]');
+            if (quickAddBtn && userRole === 'admin') {
+                quickAddBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const modal = new bootstrap.Modal(document.getElementById('quickAddModal'));
+                    modal.show();
+                });
+            }
+
+            // Preferences form handling
+            const preferencesForm = document.getElementById('preferencesForm');
+            if (preferencesForm) {
+                function loadUserPreferences() {
+                    try {
+                        const preferences = JSON.parse(localStorage.getItem('userPreferences')) || {
+                            theme: 'light',
+                            notifications: true,
+                            refreshRate: 300000 // Default 5 minutes
+                        };
+
+                        document.body.className = preferences.theme === 'dark' ? 'dark-theme' : 'light-theme';
+                        document.getElementById('themeSelect').value = preferences.theme;
+                        document.getElementById('notificationsToggle').checked = preferences.notifications;
+                        document.getElementById('refreshRate').value = preferences.refreshRate;
+
+                        return preferences;
+                    } catch (error) {
+                        console.error('Error loading user preferences:', error);
+                        return { theme: 'light', notifications: true, refreshRate: 300000 };
+                    }
+                }
+
+                function saveUserPreferences(preferences) {
+                    try {
+                        localStorage.setItem('userPreferences', JSON.stringify(preferences));
+                        loadUserPreferences();
+                        showNotification('Cài đặt người dùng đã được lưu!', 'success');
+                    } catch (error) {
+                        console.error('Error saving user preferences:', error);
+                        showNotification('Lỗi khi lưu cài đặt!', 'error');
+                    }
+                }
+
+                // Load initial preferences
+                loadUserPreferences();
+
+                // Handle form submission
+                preferencesForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    saveUserPreferences({
+                        theme: document.getElementById('themeSelect').value,
+                        notifications: document.getElementById('notificationsToggle').checked,
+                        refreshRate: parseInt(document.getElementById('refreshRate').value)
+                    });
+                });
+            }
+
+            // Schedule form handling
+            const scheduleForm = document.getElementById('scheduleForm');
+            if (scheduleForm) {
+                class MaintenanceScheduler {
+                    constructor() {
+                        this.scheduledTasks = [];
+                        this.loadTasks();
+                    }
+
+                    loadTasks() {
+                        const savedTasks = localStorage.getItem('maintenanceTasks');
+                        this.scheduledTasks = savedTasks ? JSON.parse(savedTasks) : [];
+                    }
+
+                    saveTasks() {
+                        localStorage.setItem('maintenanceTasks', JSON.stringify(this.scheduledTasks));
+                    }
+
+                    scheduleTask(equipmentId, date, description) {
+                        const task = { equipmentId, date: new Date(date).toISOString(), description, status: 'Scheduled' };
+                        this.scheduledTasks.push(task);
+                        this.saveTasks();
+                        this.notifyTask(task);
+                        return task;
+                    }
+
+                    notifyTask(task) {
+                        if (new Date(task.date) <= new Date() && task.status === 'Scheduled') {
+                            task.status = 'Pending';
+                            this.saveTasks();
+                            showNotification(`Nhiệm vụ bảo trì cho thiết bị ${task.equipmentId} đến hạn!`, 'warning');
+                            log(`Nhiệm vụ bảo trì: ${task.description} - Trạng thái: ${task.status}`);
+                        }
+                    }
+
+                    checkTasks() {
+                        this.scheduledTasks.forEach(task => this.notifyTask(task));
+                    }
+                }
+
+                const scheduler = new MaintenanceScheduler();
+
+                scheduleForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    scheduler.scheduleTask(
+                        document.getElementById('scheduleEquipmentId').value,
+                        document.getElementById('scheduleDate').value,
+                        document.getElementById('scheduleDescription').value
+                    );
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('scheduleModal'));
+                    modal.hide();
+                    scheduleForm.reset();
+                    showNotification('Nhiệm vụ bảo trì đã được lên lịch!', 'success');
+                });
+
+                setInterval(() => scheduler.checkTasks(), 60000);
+            }
+
+            // Performance monitoring
+            function monitorPerformance() {
+                const startTime = performance.now();
+                return {
+                    logPerformance: () => {
+                        const endTime = performance.now();
+                        const duration = endTime - startTime;
+                        log(`Hiệu suất: Trang tải trong ${duration.toFixed(2)}ms tại ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`);
+                    }
+                };
+            }
+
+            const performanceMonitor = monitorPerformance();
+            window.addEventListener('load', performanceMonitor.logPerformance);
+
+            // Error handling
+            window.addEventListener('error', (event) => {
+                log(`Lỗi JavaScript: ${event.message} tại ${event.filename}:${event.lineno}`);
+                showNotification('Đã xảy ra lỗi hệ thống, vui lòng kiểm tra nhật ký!', 'error');
+            });
+
+        } catch (error) {
+            console.error('Error initializing dashboard:', error);
+            showNotification('Lỗi khởi tạo dashboard!', 'error');
+        }
+    });
+</script>
+</body>
+</html>
+

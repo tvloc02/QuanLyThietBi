@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Dashboard Admin - BaoTriStack</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+<div class="main-container">
+    <!-- Header Section -->
+    <div class="header">
+        <div class="header-title">
+            <i class="fas fa-cog"></i>
+            QUẢN LÝ THIẾT BỊ TRƯỜNG HỌC
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Tìm kiếm..." class="form-control">
+        </div>
+        <div class="user-info">
+            <div class="user-avatar" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="dropdown">
+                <div class="account-dropdown dropdown-menu dropdown-menu-end">
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-user me-2"></i>
+                        <span th:text="${hoVaTen ?: 'Admin User'}">Admin User</span>
+                    </div>
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        <span th:text="${roleTitle ?: 'Quản trị viên'}">Quản trị viên</span>
+                    </div>
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-envelope me-2"></i>
+                        <span th:text="${email ?: 'admin@truonghoc.edu.vn'}"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e180858c888fa19593948e8f86898e82cf848594cf978f">[email&#160;protected]</a></span>
+                    </div>
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-clock me-2"></i>
+                        <span>Đăng nhập gần nhất: <span th:text="${lastLogin ?: '28/07/2025 14:00'}">28/07/2025 14:00</span></span>
+                    </div>
+                    <hr class="my-2">
+                    <a href="/tai-khoan/chinh-sua" class="account-dropdown-item">
+                        <i class="fas fa-user-edit me-2"></i> Chỉnh sửa hồ sơ
+                    </a>
+                    <a href="/logout" class="account-dropdown-item text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
+                    </a>
+                </div>
+            </div>
+            <div>
+                <div style="font-weight: 600; margin-bottom: 4px;" th:text="${hoVaTen ?: 'Admin User'}">Admin User</div>
+                <div style="opacity: 0.8; font-size: 0.9rem;" th:text="${roleTitle ?: 'Quản trị viên'}">Quản trị viên</div>
+                <div style="opacity: 0.7; font-size: 0.8rem;">
+                    <i class="fas fa-clock me-1"></i>
+                    <span th:text="${currentTime}">00:56 30/07/2025</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Horizontal Navigation Menu -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item dropdown" th:if="${canManageUsers}">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Người dùng
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/nguoi-dung/nguoi-dung/danh-sach-nguoi-dung">Danh sách người dùng</a></li>
+                            <li><a class="dropdown-item" href="/nguoi-dung/duyet-yeu-cau">Duyệt yêu cầu</a></li>
+                            <li><a class="dropdown-item" href="/nguoi-dung/them-moi">Thêm người dùng</a></li>
+                            <li><a class="dropdown-item" href="/nguoi-dung/kiem-tra-dinh-ky">Kiểm tra định kỳ</a></li>
+                            <li><a class="dropdown-item" href="/nguoi-dung/lich-su-bao-tri">Lịch sử bảo trì</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item" th:if="${canManageDevices}">
+                        <a class="nav-link" href="/thiet-bi">Thiết bị</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Vật tư
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/vat-tu/quan-ly-kho">Quản lý kho</a></li>
+                            <li><a class="dropdown-item" href="/vat-tu/thieu-hang">Vật tư thiếu hàng</a></li>
+                            <li><a class="dropdown-item" href="/vat-tu/het-han">Vật tư hết hạn</a></li>
+                            <li><a class="dropdown-item" href="/vat-tu/bao-cao-ton-kho">Báo cáo tồn kho</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown" th:if="${canManageMaintenance}">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Bảo trì
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/bao-tri/yeu-cau">Yêu cầu bảo trì</a></li>
+                            <li><a class="dropdown-item" href="/bao-tri/duyet-yeu-cau">Duyệt yêu cầu</a></li>
+                            <li><a class="dropdown-item" href="/bao-tri/ke-hoach">Kế hoạch bảo trì</a></li>
+                            <li><a class="dropdown-item" href="/bao-tri/thuc-hien">Thực hiện bảo trì</a></li>
+                            <li><a class="dropdown-item" href="/bao-tri/kiem-tra-dinh-ky">Kiểm tra định kỳ</a></li>
+                            <li><a class="dropdown-item" href="/bao-tri/lich-su">Lịch sử bảo trì</a></li>
+                            <li><a class="dropdown-item" href="/bao-tri/canh-bao-loi">Cảnh báo lỗi</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown" th:if="${canManageTeams}">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Đội bảo trì
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/doi-bao-tri/danh-sach">Danh sách đội</a></li>
+                            <li><a class="dropdown-item" href="/doi-bao-tri/them-moi">Thêm đội mới</a></li>
+                            <li><a class="dropdown-item" href="/doi-bao-tri/quan-ly-thanh-vien">Quản lý thành viên</a></li>
+                            <li><a class="dropdown-item" href="/doi-bao-tri/phan-cong">Phân công công việc</a></li>
+                            <li><a class="dropdown-item" href="/doi-bao-tri/hieu-suat">Hiệu suất đội</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown" th:if="${canViewReports}">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Báo cáo
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/bao-cao/bao-cao-tong-hop">Báo cáo tổng hợp</a></li>
+                            <li><a class="dropdown-item" href="/bao-cao/bao-cao-oee">Báo cáo OEE</a></li>
+                            <li><a class="dropdown-item" href="/bao-cao/bao-cao-mtbf">Báo cáo MTBF</a></li>
+                            <li><a class="dropdown-item" href="/bao-cao/bao-cao-mttr">Báo cáo MTTR</a></li>
+                            <li><a class="dropdown-item" href="/bao-cao/thiet-bi">Báo cáo thiết bị</a></li>
+                            <li><a class="dropdown-item" href="/bao-cao/vat-tu">Báo cáo vật tư</a></li>
+                            <li><a class="dropdown-item" href="/bao-cao/thong-ke-hieu-suat">Thống kê hiệu suất</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown" th:if="${canManageSystem}">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Debug
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/debug/csrf-token">CSRF Token</a></li>
+                            <li><a class="dropdown-item" href="/debug/test-form">Test Form</a></li>
+                            <li><a class="dropdown-item" href="/debug/test-dashboard">Test Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/debug/check-auth">Check Auth</a></li>
+                            <li><a class="dropdown-item" href="/debug/force-login">Force Login</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Trợ giúp
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/tro-giup/huong-dan-su-dung">Hướng dẫn sử dụng</a></li>
+                            <li><a class="dropdown-item" href="/tro-giup/video-huong-dan">Video hướng dẫn</a></li>
+                            <li><a class="dropdown-item" href="/tro-giup/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+                            <li><a class="dropdown-item" href="/tro-giup/lien-he-ho-tro">Liên hệ hỗ trợ</a></li>
+                            <li><a class="dropdown-item" href="/tro-giup/ve-he-thong">Về hệ thống</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="welcome-title">
+            <i class="fas fa-wrench"></i>
+            Chào mừng trở lại!
+        </div>
+        <div class="welcome-subtitle">
+            <i class="fas fa-check-circle"></i>
+            Hệ thống quản lý thiết bị BaoTriStack đang hoạt động tốt.
+            <span class="fw-bold">Hôm nay có 0 yêu cầu bảo trì</span> cần xử lý và
+            <span class="fw-bold">0 cảnh báo</span> cần kiểm tra.
+        </div>
+        <div class="status-badge">
+            <span class="status-indicator status-online"></span>
+            <span>Hệ thống hoạt động bình thường</span>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-container">
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card primary">
+                    <div class="stat-icon primary">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div class="stat-number" id="tongThietBi" th:text="${tongThietBi ?: 0}">0</div>
+                    <div class="stat-label">Tổng số thiết bị</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>5 thiết bị mới</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card warning">
+                    <div class="stat-icon warning">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="stat-number" id="tongYeuCauBaoTri" th:text="${tongYeuCauBaoTri ?: 0}">0</div>
+                    <div class="stat-label">Yêu cầu bảo trì</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span th:text="${yeuCauChoDuyet ?: 0} + ' chờ duyệt'">0 chờ duyệt</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card success">
+                    <div class="stat-icon success">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-number" id="tongVatTu" th:text="${tongVatTu ?: 0}">0</div>
+                    <div class="stat-label">Vật tư trong kho</div>
+                    <div class="stat-trend trend-down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span th:text="${vatTuThieuHang ?: 0} + ' loại thiếu hàng'">0 loại thiếu hàng</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card danger">
+                    <div class="stat-icon danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-number" id="tongCanhBao" th:text="${tongCanhBao ?: 0}">0</div>
+                    <div class="stat-label">Cảnh báo</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>3 cảnh báo mới</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Admin Stats -->
+        <div class="row g-4 mt-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card primary">
+                    <div class="stat-icon primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number" id="tongNguoiDung" th:text="${tongNguoiDung ?: 0}">0</div>
+                    <div class="stat-label">Người dùng</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span th:text="${nguoiDungHoatDong ?: 0} + ' đang hoạt động'">0 đang hoạt động</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card success">
+                    <div class="stat-icon success">
+                        <i class="fas fa-user-cog"></i>
+                    </div>
+                    <div class="stat-number" id="tongDoiBaoTri" th:text="${tongDoiBaoTri ?: 0}">0</div>
+                    <div class="stat-label">Đội bảo trì</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span th:text="${doiBaoTriHoatDong ?: 0} + ' đang hoạt động'">0 đang hoạt động</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card warning">
+                    <div class="stat-icon warning">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-number" id="efficiencyRate">85%</div>
+                    <div class="stat-label">Hiệu suất bảo trì</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+5% so với tháng trước</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card info">
+                    <div class="stat-icon info">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-number" id="avgResponseTime">2.5h</div>
+                    <div class="stat-label">Thời gian phản hồi TB</div>
+                    <div class="stat-trend trend-down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>-0.5h so với tuần trước</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="action-buttons">
+        <div class="action-card">
+            <h5 class="mb-4">
+                <i class="fas fa-bolt text-warning me-2"></i>
+                Thao tác nhanh
+            </h5>
+            <div class="row g-3">
+                <div class="col-md-3 col-sm-6" th:if="${canManageUsers}">
+                    <a href="/nguoi-dung/them-moi" class="action-btn" title="Ctrl+3">
+                        <div class="action-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Thêm người dùng</div>
+                            <small class="text-muted">Quản lý tài khoản</small>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-3 col-sm-6" th:if="${canManageDevices}">
+                    <a href="/thiet-bi/them-moi" class="action-btn" title="Ctrl+2">
+                        <div class="action-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Thêm thiết bị</div>
+                            <small class="text-muted">Quản lý thiết bị</small>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-3 col-sm-6">
+                    <a href="/bao-tri/tao-yeu-cau" class="action-btn" title="Ctrl+1">
+                        <div class="action-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Tạo yêu cầu</div>
+                            <small class="text-muted">Bảo trì thiết bị</small>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-3 col-sm-6" th:if="${canViewReports}">
+                    <a href="/bao-cao/xuat" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Xuất báo cáo</div>
+                            <small class="text-muted">Thống kê dữ liệu</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Advanced Admin Actions -->
+            <div class="row g-3 mt-3" th:if="${canManageSystem}">
+                <div class="col-md-3 col-sm-6">
+                    <a href="/doi-bao-tri/quan-ly" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Quản lý đội</div>
+                            <small class="text-muted">Phân công nhân viên</small>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-3 col-sm-6">
+                    <a href="/he-thong/cau-hinh" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Cấu hình hệ thống</div>
+                            <small class="text-muted">Tùy chỉnh hệ thống</small>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-3 col-sm-6">
+                    <a href="/he-thong/backup" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Sao lưu dữ liệu</div>
+                            <small class="text-muted">Backup & Restore</small>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-3 col-sm-6">
+                    <a href="/he-thong/log" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Xem log hệ thống</div>
+                            <small class="text-muted">Theo dõi hoạt động</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Analytics -->
+    <div class="chart-section">
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="chart-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="chart-title mb-0">Hoạt động gần đây</h6>
+                        <button class="btn btn-sm btn-outline-primary" onclick="refreshActivities()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <div id="recentActivities">
+                        <div class="text-center py-4">
+                            <div class="loading"></div>
+                            <p class="mt-2 text-muted">Đang tải hoạt động...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="chart-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="chart-title mb-0">Trạng thái hệ thống</h6>
+                        <span class="badge bg-success" id="systemOverallStatus">Hoạt động tốt</span>
+                    </div>
+                    <div id="systemStatus">
+                        <div class="text-center py-4">
+                            <div class="loading"></div>
+                            <p class="mt-2 text-muted">Đang kiểm tra hệ thống...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Access Toolbar -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1000;">
+        <div class="card shadow-sm">
+            <div class="card-body p-2">
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-primary" onclick="refreshDashboard()" title="Refresh (Ctrl+R)">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button class="btn btn-sm btn-success" onclick="exportData()" title="Export Data">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="btn btn-sm btn-info" onclick="toggleFullscreen()" title="Fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <a href="/logout" class="btn btn-sm btn-danger" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification Container -->
+<div id="notificationContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+<!-- Bootstrap JS -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/dashboard.js"></script>
+</body>
+</html>

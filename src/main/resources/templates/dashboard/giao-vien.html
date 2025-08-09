@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Dashboard Giáo viên - BaoTriStack</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+<div class="main-container">
+    <!-- Header Section -->
+    <div class="header">
+        <div class="header-title">
+            <i class="fas fa-chalkboard-teacher"></i>
+            DASHBOARD GIÁO VIÊN
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Tìm kiếm thiết bị..." class="form-control">
+        </div>
+        <div class="user-info">
+            <div class="user-avatar" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="dropdown">
+                <div class="account-dropdown dropdown-menu dropdown-menu-end">
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-user me-2"></i>
+                        <span th:text="${hoVaTen ?: 'Giáo viên'}">Giáo viên</span>
+                    </div>
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>
+                        <span th:text="${roleTitle ?: 'Giáo viên'}">Giáo viên</span>
+                    </div>
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-envelope me-2"></i>
+                        <span th:text="${email ?: 'giaovien@truonghoc.edu.vn'}">giaovien@truonghoc.edu.vn</span>
+                    </div>
+                    <div class="account-dropdown-item">
+                        <i class="fas fa-clock me-2"></i>
+                        <span>Đăng nhập gần nhất: <span th:text="${lastLogin ?: '30/07/2025 14:00'}">30/07/2025 14:00</span></span>
+                    </div>
+                    <hr class="my-2">
+                    <a href="/tai-khoan/chinh-sua" class="account-dropdown-item">
+                        <i class="fas fa-user-edit me-2"></i> Chỉnh sửa hồ sơ
+                    </a>
+                    <a href="/logout" class="account-dropdown-item text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
+                    </a>
+                </div>
+            </div>
+            <div>
+                <div style="font-weight: 600; margin-bottom: 4px;" th:text="${hoVaTen ?: 'Giáo viên'}">Giáo viên</div>
+                <div style="opacity: 0.8; font-size: 0.9rem;" th:text="${roleTitle ?: 'Giáo viên'}">Giáo viên</div>
+                <div style="opacity: 0.7; font-size: 0.8rem;">
+                    <i class="fas fa-clock me-1"></i>
+                    <span th:text="${currentTime}">00:56 30/07/2025</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Horizontal Navigation Menu -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/thiet-bi/xem">Xem thiết bị</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/bao-tri/tao-yeu-cau">Yêu cầu bảo trì</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/bao-tri/lich-su-yeu-cau">Lịch sử yêu cầu</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Trợ giúp
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/tro-giup/huong-dan-su-dung">Hướng dẫn sử dụng</a></li>
+                            <li><a class="dropdown-item" href="/tro-giup/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+                            <li><a class="dropdown-item" href="/tro-giup/lien-he-ho-tro">Liên hệ hỗ trợ</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="welcome-title">
+            <i class="fas fa-graduation-cap"></i>
+            Chào mừng Giáo viên!
+        </div>
+        <div class="welcome-subtitle">
+            <i class="fas fa-check-circle"></i>
+            Hệ thống hỗ trợ quản lý thiết bị phục vụ giảng dạy.
+            <span class="fw-bold">Bạn có thể xem thiết bị</span> và
+            <span class="fw-bold">tạo yêu cầu bảo trì</span> khi cần thiết.
+        </div>
+        <div class="status-badge">
+            <span class="status-indicator status-online"></span>
+            <span>Sẵn sàng hỗ trợ giảng dạy</span>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-container">
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="stat-card primary">
+                    <div class="stat-icon primary">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                    <div class="stat-number" th:text="${thietBiCoTheSuDung ?: 0}">0</div>
+                    <div class="stat-label">Thiết bị có thể sử dụng</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>Đang hoạt động tốt</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="stat-card warning">
+                    <div class="stat-icon warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-number" th:text="${yeuCauBaoTriCuaToi ?: 0}">0</div>
+                    <div class="stat-label">Yêu cầu bảo trì của tôi</div>
+                    <div class="stat-trend">
+                        <i class="fas fa-clock"></i>
+                        <span th:text="${yeuCauDangXuLy ?: 0} + ' đang xử lý'">0 đang xử lý</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="stat-card danger">
+                    <div class="stat-icon danger">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="stat-number" th:text="${thietBiCanBaoTri ?: 0}">0</div>
+                    <div class="stat-label">Thiết bị cần bảo trì</div>
+                    <div class="stat-trend trend-down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>Cần báo cáo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="action-buttons">
+        <div class="action-card">
+            <h5 class="mb-4">
+                <i class="fas fa-bolt text-warning me-2"></i>
+                Thao tác nhanh
+            </h5>
+            <div class="row g-3">
+                <div class="col-md-4 col-sm-6">
+                    <a href="/thiet-bi/xem" class="action-btn" title="Ctrl+1">
+                        <div class="action-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Xem thiết bị</div>
+                            <small class="text-muted">Danh sách thiết bị</small>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <a href="/bao-tri/tao-yeu-cau" class="action-btn" title="Ctrl+2">
+                        <div class="action-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Tạo yêu cầu bảo trì</div>
+                            <small class="text-muted">Báo cáo sự cố</small>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <a href="/bao-tri/lich-su-yeu-cau" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Lịch sử yêu cầu</div>
+                            <small class="text-muted">Theo dõi yêu cầu</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Analytics -->
+    <div class="chart-section">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="chart-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="chart-title mb-0">Thiết bị phòng học của tôi</h6>
+                        <button class="btn btn-sm btn-outline-primary" onclick="refreshDeviceList()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <div id="myDevices">
+                        <div class="text-center py-4">
+                            <div class="loading"></div>
+                            <p class="mt-2 text-muted">Đang tải danh sách thiết bị...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="chart-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="chart-title mb-0">Yêu cầu gần đây</h6>
+                    </div>
+                    <div id="recentRequests">
+                        <div class="text-center py-4">
+                            <div class="loading"></div>
+                            <p class="mt-2 text-muted">Đang tải yêu cầu...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Quick Access Toolbar -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1000;">
+        <div class="card shadow-sm">
+            <div class="card-body p-2">
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-primary" onclick="refreshDashboard()" title="Refresh (Ctrl+R)">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button class="btn btn-sm btn-success" onclick="exportData()" title="Export Data">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="btn btn-sm btn-info" onclick="toggleFullscreen()" title="Fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <a href="/logout" class="btn btn-sm btn-danger" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification Container -->
+<div id="notificationContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/dashboard.js"></script>
+
+<script>
+    // Giáo viên specific functions
+    function refreshDeviceList() {
+        const container = document.getElementById('myDevices');
+        container.innerHTML = `
+        <div class="alert alert-info">
+            <h6><i class="fas fa-info-circle me-2"></i>Danh sách thiết bị phòng học</h6>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="border p-2 mb-2 rounded">
+                        <strong>Máy tính #PC001</strong><br>
+                        <small class="text-success"><i class="fas fa-check-circle"></i> Hoạt động tốt</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border p-2 mb-2 rounded">
+                        <strong>Máy chiếu #PRJ001</strong><br>
+                        <small class="text-warning"><i class="fas fa-exclamation-triangle"></i> Cần kiểm tra</small>
+                    </div>
+                </div>
+            </div>
+            <p class="mb-0">
+                <a href="/thiet-bi/xem" class="btn btn-sm btn-primary">Xem tất cả</a>
+            </p>
+        </div>
+    `;
+    }
+
+    // Load recent requests
+    function loadRecentRequests() {
+        const container = document.getElementById('recentRequests');
+        container.innerHTML = `
+        <div class="activity-item">
+            <div class="activity-icon" style="background: var(--warning-orange)">
+                <i class="fas fa-tools"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-title">Yêu cầu sửa máy chiếu</div>
+                <div class="activity-time">2 ngày trước</div>
+            </div>
+        </div>
+        <div class="activity-item">
+            <div class="activity-icon" style="background: var(--success-green)">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-title">Yêu cầu bảo trì máy tính hoàn thành</div>
+                <div class="activity-time">1 tuần trước</div>
+            </div>
+        </div>
+    `;
+    }
+
+    // Initialize teacher dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+            refreshDeviceList();
+            loadRecentRequests();
+        }, 1000);
+    });
+</script>
+</body>
+</html>
